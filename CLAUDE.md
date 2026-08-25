@@ -276,3 +276,36 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 1 — Synthetic Data Generation
+
+---
+
+## Iteration Log — Phase 1 (Synthetic Data Generation) — 2026-08-25
+
+### What was done
+- Built `backend/data/generate_synthetic_data.py` implementing the full data story from Section 4:
+  - **sales_transactions** (1,484 rows): daily grain, 5 categories × 4 regions × 90 days. Columns: date, product_category, region, units_sold, unit_price, revenue, cost.
+  - **marketing_spend** (52 rows): weekly grain, 13 weeks × 4 channels. Columns: week_start, channel, spend.
+  - **customer_roster** (3,053 rows): monthly grain, 3 months × ~1,000+ customers. Columns: month, customer_id, status, signup_date.
+- All 4 scripted events implemented and verified in plots:
+  - **Event 1 — Week 7 Revenue dip (May 13-19):** Electronics price cut from ~$150 to ~$135 (10%) + 20% volume drop. Total daily revenue drops from ~$57K to ~$48K. Gross margin compresses from ~37.7% to ~34.8%. Both price and volume components clearly visible in isolation.
+  - **Event 2 — Sparse history (Day 80+, Jun 19):** "Sports & Outdoors" category appears with only 11 days of data. Revenue ~$1,800-$2,100/day. Clearly too few data points for reliable baseline.
+  - **Event 3 — Month 3 churn abstain (June):** 309 of 1,036 records (29.8%) have null status. Apparent churn rate jumps to 17.1% (from 4.5%/9.7% in prior months), but 30% data incompleteness makes it untrustworthy.
+  - **Event 4 — Gross Margin access control:** No data manipulation needed — this is a permissions rule for later phases.
+- Baseline noise is small and realistic: ~5% std dev daily, plus weekend patterns (Electronics/Home dip, Grocery/Apparel bump) and a 0.1%/day growth trend. Scripted anomalies stand out clearly against baseline.
+- Output saved to both CSV and SQLite in `backend/data/raw/`.
+- Built `backend/data/plot_data.py` — 6-panel verification plot saved as `data_verification_plots.png`.
+- Committed to git (commit `4c9e144`).
+
+### Key decisions made
+- Used **fixed cost per unit** (not a % of selling price) so the Week 7 price cut visibly compresses gross margin — this creates an interesting signal for the CFO persona later.
+- Category baselines: Electronics ~$30K/day (200 units × $150), Apparel ~$12K/day (300 × $40), Home ~$9K/day (150 × $60), Grocery ~$5K/day (500 × $10). Total ~$56K/day.
+- Month 3 churn: bumped true churn rate from 5% → 8% (genuine movement) AND injected 30% nulls. This ensures the engine has a real signal to detect but insufficient data quality to trust it — perfect for the abstain scenario.
+- New category "Sports & Outdoors" (not just "Sports") for clarity in labels.
+- `np.random.seed(42)` for full reproducibility.
+- Installed matplotlib as an additional dependency for plotting (not in requirements.txt since it's only needed for data verification, not the production app).
+
+### What remains
+- Phase 1 is fully complete. All 4 events verified visually in the plots.
+
+### Next phase (pending confirmation)
+- Phase 2 — Semantic Contract
