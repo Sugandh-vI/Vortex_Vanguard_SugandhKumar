@@ -348,3 +348,42 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 3 — Detection Engine
+
+---
+
+## Iteration Log — Phase 3 (Detection Engine) — 2026-08-25
+
+### What was done
+- Built `backend/engine/detection.py` — complete anomaly detection module with:
+  - **`AnomalyResult` dataclass**: structured output per detected anomaly, carrying all metadata for downstream modules (kpi_name, period, current/baseline values, absolute/pct change, z-score, direction, materiality details, detection method, data_points_used, insufficient_history flag, data_completeness).
+  - **`prepare_daily_kpi()`**: aggregates `sales_transactions` into daily KPI time series for Revenue (`SUM(revenue)`), Units Sold (`SUM(units_sold)`), and Gross Margin % (`(rev-cost)/rev * 100`).
+  - **`prepare_monthly_churn()`**: computes monthly churn rate + data completeness from `customer_roster`, tracking null records for the abstain scenario.
+  - **`_detect_daily_anomalies()`**: rolling z-score detection with configurable window (default 21 days) and threshold (default 2.0). Computes rolling mean/std excluding the current point (shift(1)), then flags days where |z| > threshold AND materiality conditions are met.
+  - **Materiality filter**: combines % change threshold AND/OR absolute $ impact threshold from the contract. Must pass at least one to be flagged.
+  - **`_detect_monthly_anomalies()`**: period-over-period comparison for monthly KPIs (only 3 months, z-score impractical). Computes z-score when ≥2 prior months exist. Tracks data completeness per month.
+  - **`_rank_anomalies()`**: priority ranking by severity = |z_score| × |pct_change|.
+  - **`run_detection()`**: main entry point — runs detection across all 4 KPIs, returns priority-ranked list.
+  - **`detect_by_category()`**: per-category detection using base KPI thresholds, with a slightly lower z-score threshold (−0.5) to catch category-level movements diluted at aggregate level.
+
+- Verified against synthetic data — **all scripted events detected correctly**:
+  - **Event 1 (Week 7)**: 9 anomalies — Revenue (4 hits, z=−3.53, pct=−13.6%), Gross Margin (4 hits, z=−16.1, pct=−7.8%), Units Sold (1 hit, z=−2.36, pct=−5.1%). Per-category: Electronics has 6 Week 7 hits (z=−3.06, pct=−24.7%), other categories show no Week 7 signal. ✅
+  - **Event 2 (Sparse history)**: Sports & Outdoors — zero anomalies detected (too few data points to build a baseline, rolling window needs ≥7 points but Sports only has 11 total days). ✅
+  - **Event 3 (Month 3 churn)**: Detected churn increase from 9.7% → 17.1% (Δ=+7.3pp, z=2.69), with `data_completeness=70%` correctly tracked for downstream abstain logic. ✅
+  - **Event 4**: No detection needed — access control is a permissions rule.
+
+- Fixed a bug: `detect_by_category()` was passing category-qualified names (e.g., `Revenue [Apparel]`) to contract lookups. Added `contract_kpi_name` parameter to `_detect_daily_anomalies()` to separate the display label from the contract lookup name.
+
+- Committed to git (commit `4e016e6`).
+
+### Key decisions made
+- **Rolling window = 21 days**: matches 3 business weeks and aligns with the sparse-history threshold. Long enough for stable baselines, short enough to react to trends.
+- **Z-score threshold = 2.0**: roughly 95th percentile for normal distribution. Catches Week 7 events (z=−3.53 for Revenue, z=−16.1 for Gross Margin) while keeping false positives manageable (24 total anomalies across 90 days × 4 KPIs).
+- **Materiality = OR logic**: an anomaly is material if it exceeds EITHER the % threshold OR the $ threshold. This ensures both large-percentage-small-dollar and small-percentage-large-dollar movements are caught.
+- **Per-category threshold −0.5**: slightly more sensitive at category level since individual category movements are larger in percentage terms but get diluted in the aggregate.
+- **Shift(1) on rolling stats**: the baseline excludes the current day's value, preventing the anomaly from dampening its own z-score.
+
+### What remains
+- Phase 3 is fully complete. All scripted events verified.
+
+### Next phase (pending confirmation)
+- Phase 4 — Reconciliation + Driver Decomposition
