@@ -1,1 +1,314 @@
-# KPI Semantic Contract — Phase 2
+# ============================================================
+# KPI Semantic Contract — BusinessIntelligence.ai
+# ============================================================
+#
+# This file is the single source of truth for KPI definitions,
+# calculations, sources, drivers, thresholds, access rules,
+# and column lineage. Every insight the engine produces must
+# be traceable back to fields in this contract.
+#
+# Structure per KPI:
+#   name, definition, formula, source_tables, grain,
+#   refresh_cadence, persona_access, known_drivers,
+#   materiality_thresholds, lineage
+# ============================================================
+
+# -----------------------------------------------------------
+# Data source metadata (for freshness / reconciliation)
+# -----------------------------------------------------------
+sources:
+  sales_transactions:
+    grain: daily
+    refresh_cadence: daily
+    key_columns: [date, product_category, region]
+    description: >
+      Daily product-level sales data including units, prices,
+      revenue, and cost. Supports Revenue, Units Sold, and
+      Gross Margin % KPIs.
+
+  marketing_spend:
+    grain: weekly
+    refresh_cadence: weekly
+    key_columns: [week_start, channel]
+    description: >
+      Weekly marketing spend by channel. Used as a supporting
+      driver input for Revenue and Units Sold explanations.
+
+  customer_roster:
+    grain: monthly
+    refresh_cadence: monthly
+    key_columns: [month, customer_id]
+    description: >
+      Monthly customer status snapshot. Each row is one customer
+      in one month with an active/churned status. Supports the
+      Customer Churn Rate KPI.
+
+# -----------------------------------------------------------
+# KPI definitions
+# -----------------------------------------------------------
+kpis:
+
+  # =========================================================
+  # 1. Revenue
+  # =========================================================
+  - name: Revenue
+    definition: >
+      Total revenue from product sales across all categories
+      and regions, calculated as the sum of units sold
+      multiplied by unit price for each transaction row.
+    formula: "SUM(units_sold * unit_price)"
+    source_tables:
+      - sales_transactions
+    grain: daily
+    refresh_cadence: daily
+    unit: USD
+
+    persona_access:
+      - CFO
+      - Category Manager
+
+    known_drivers:
+      - name: unit_price
+        type: controllable
+        source_table: sales_transactions
+        source_column: unit_price
+        description: "Average selling price per unit — directly affects revenue per unit sold."
+        decomposition_method: price_volume_mix
+
+      - name: units_sold
+        type: semi_controllable
+        source_table: sales_transactions
+        source_column: units_sold
+        description: "Volume of units sold — driven by demand, pricing, and promotions."
+        decomposition_method: price_volume_mix
+
+      - name: product_mix
+        type: semi_controllable
+        source_table: sales_transactions
+        source_column: product_category
+        description: "Distribution of sales across product categories — shifts in mix affect blended revenue."
+        decomposition_method: price_volume_mix
+
+      - name: marketing_spend
+        type: controllable
+        source_table: marketing_spend
+        source_column: spend
+        description: "Total marketing investment across channels — correlated with demand."
+        decomposition_method: correlation
+
+    materiality_thresholds:
+      pct_change: 5.0       # flag if daily revenue changes ≥5% vs rolling baseline
+      absolute_impact: 5000  # flag if absolute $ change ≥ $5,000
+      impact_unit: USD
+
+    lineage:
+      primary:
+        - table: sales_transactions
+          columns: [date, product_category, region, units_sold, unit_price, revenue]
+      supporting:
+        - table: marketing_spend
+          columns: [week_start, channel, spend]
+
+  # =========================================================
+  # 2. Units Sold
+  # =========================================================
+  - name: Units Sold
+    definition: >
+      Total number of product units sold across all categories
+      and regions in a given day.
+    formula: "SUM(units_sold)"
+    source_tables:
+      - sales_transactions
+    grain: daily
+    refresh_cadence: daily
+    unit: units
+
+    persona_access:
+      - CFO
+      - Category Manager
+
+    known_drivers:
+      - name: unit_price
+        type: controllable
+        source_table: sales_transactions
+        source_column: unit_price
+        description: "Selling price — price elasticity affects volume demand."
+        decomposition_method: correlation
+
+      - name: product_mix
+        type: semi_controllable
+        source_table: sales_transactions
+        source_column: product_category
+        description: "Category-level volume distribution — new/removed categories shift totals."
+        decomposition_method: contribution
+
+      - name: marketing_spend
+        type: controllable
+        source_table: marketing_spend
+        source_column: spend
+        description: "Marketing investment drives awareness and conversion."
+        decomposition_method: correlation
+
+      - name: seasonality
+        type: uncontrollable
+        source_table: null
+        source_column: null
+        description: "Day-of-week and seasonal patterns in consumer demand."
+        decomposition_method: time_series
+
+    materiality_thresholds:
+      pct_change: 5.0        # flag if daily units change ≥5% vs rolling baseline
+      absolute_impact: 100    # flag if absolute unit change ≥ 100 units
+      impact_unit: units
+
+    lineage:
+      primary:
+        - table: sales_transactions
+          columns: [date, product_category, region, units_sold]
+      supporting:
+        - table: marketing_spend
+          columns: [week_start, channel, spend]
+
+  # =========================================================
+  # 3. Gross Margin %
+  # =========================================================
+  - name: Gross Margin %
+    definition: >
+      Gross profit as a percentage of revenue, measuring the
+      profitability of sales after deducting the direct cost
+      of goods sold. Derived daily from the sales_transactions
+      table.
+    formula: "(SUM(revenue) - SUM(cost)) / SUM(revenue) * 100"
+    source_tables:
+      - sales_transactions
+    grain: daily
+    refresh_cadence: daily
+    unit: percent
+
+    persona_access:
+      - CFO
+      # NOTE: Category Manager is deliberately EXCLUDED.
+      # This is the access-control demo scenario (Event 4).
+      # Any attempt by Category Manager to access this KPI
+      # must be blocked, logged, and visibly shown as blocked.
+
+    known_drivers:
+      - name: unit_price
+        type: controllable
+        source_table: sales_transactions
+        source_column: unit_price
+        description: "Selling price changes directly affect the revenue numerator."
+        decomposition_method: margin_decomposition
+
+      - name: unit_cost
+        type: semi_controllable
+        source_table: sales_transactions
+        source_column: cost
+        description: "Cost of goods — supplier pricing, input costs."
+        decomposition_method: margin_decomposition
+
+      - name: product_mix
+        type: semi_controllable
+        source_table: sales_transactions
+        source_column: product_category
+        description: "Categories have different margin profiles — mix shifts affect blended margin."
+        decomposition_method: contribution
+
+    materiality_thresholds:
+      pct_change: 2.0        # flag if margin moves ≥2 percentage points
+      absolute_impact: null   # not applicable for a % metric
+      impact_unit: percentage_points
+
+    lineage:
+      primary:
+        - table: sales_transactions
+          columns: [date, product_category, region, revenue, cost]
+      supporting: []
+
+  # =========================================================
+  # 4. Customer Churn Rate
+  # =========================================================
+  - name: Customer Churn Rate
+    definition: >
+      Percentage of customers who transitioned from active to
+      churned status in a given month, calculated as the number
+      of churned customers divided by the total number of
+      customers with a known (non-null) status.
+    formula: "COUNT(status='churned') / COUNT(status IS NOT NULL) * 100"
+    source_tables:
+      - customer_roster
+    grain: monthly
+    refresh_cadence: monthly
+    unit: percent
+
+    persona_access:
+      - CFO
+      - Category Manager
+
+    known_drivers:
+      - name: customer_tenure
+        type: uncontrollable
+        source_table: customer_roster
+        source_column: signup_date
+        description: "Longer-tenured customers tend to have lower churn propensity."
+        decomposition_method: cohort_analysis
+
+      - name: data_completeness
+        type: uncontrollable
+        source_table: customer_roster
+        source_column: status
+        description: >
+          Fraction of records with non-null status. Below 90% completeness,
+          the churn rate is unreliable and the engine should abstain.
+        decomposition_method: data_quality_check
+
+    materiality_thresholds:
+      pct_change: 2.0        # flag if churn rate moves ≥2 percentage points
+      absolute_impact: null   # not applicable for a % metric
+      impact_unit: percentage_points
+
+    # Data quality gate — specific to this KPI
+    data_quality_requirements:
+      min_completeness: 0.90  # if <90% of records have non-null status, abstain
+      min_history_months: 2   # need ≥2 months of history for a reliable baseline
+
+    lineage:
+      primary:
+        - table: customer_roster
+          columns: [month, customer_id, status, signup_date]
+      supporting: []
+
+# -----------------------------------------------------------
+# Confidence scoring parameters (used by confidence.py)
+# -----------------------------------------------------------
+confidence:
+  levels:
+    high:
+      min_explained_pct: 80      # ≥80% of movement explained by known drivers
+      max_data_staleness_hours: 48
+      min_history_days: 30       # for daily KPIs
+      min_history_months: 3      # for monthly KPIs
+    medium:
+      min_explained_pct: 50
+      max_data_staleness_hours: 168  # 1 week
+      min_history_days: 14
+      min_history_months: 2
+    low:
+      min_explained_pct: 20
+      max_data_staleness_hours: 720  # 30 days
+      min_history_days: 7
+      min_history_months: 1
+    abstain:
+      # Trigger abstain if ANY of these conditions are met:
+      triggers:
+        - data_completeness_below: 0.90
+        - history_shorter_than_min: true
+        - contradictory_signals: true
+
+# -----------------------------------------------------------
+# Sparse-history configuration (used by confidence.py)
+# -----------------------------------------------------------
+sparse_history:
+  daily_kpi_min_days: 21      # need ≥21 days for a reliable daily baseline
+  monthly_kpi_min_months: 3   # need ≥3 months for a reliable monthly baseline
+  label: "Insufficient history — cannot reliably assess this KPI movement."
