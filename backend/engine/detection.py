@@ -79,6 +79,69 @@ class AnomalyResult:
         return asdict(self)
 
 
+@dataclass
+class SparseHistoryFlag:
+    """
+    Explicit flag for KPIs or categories with insufficient history.
+
+    This is distinct from "no anomaly detected" — it means the engine
+    cannot reliably assess this KPI because there aren't enough data
+    points to establish a baseline. Phase 5 (confidence) uses this
+    to trigger abstention, and Phase 11 (UI) displays it as a specific
+    state (not just an empty card).
+    """
+    kpi_name: str
+    category: Optional[str]      # None for aggregate KPI, category name for per-category
+    grain: str                   # "daily" or "monthly"
+    data_points_available: int
+    data_points_required: int
+    message: str                 # human-readable explanation
+    latest_date: Optional[str] = None   # most recent data point date
+    earliest_date: Optional[str] = None # first data point date
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+@dataclass
+class DetectionResult:
+    """
+    Container for the full output of the detection engine.
+
+    Downstream modules (confidence, decomposition, narration, UI) should
+    consume this rather than raw anomaly lists, because it separates:
+      - anomalies: material KPI movements that were detected
+      - sparse_history_flags: KPIs/categories where detection couldn't run
+        due to insufficient history (explicit state, not just absence)
+    """
+    anomalies: list[AnomalyResult]
+    sparse_history_flags: list[SparseHistoryFlag]
+
+    def get_anomalies_for_kpi(self, kpi_name: str) -> list[AnomalyResult]:
+        return [a for a in self.anomalies if a.kpi_name == kpi_name]
+
+    def get_sparse_flags_for_kpi(self, kpi_name: str) -> list[SparseHistoryFlag]:
+        return [f for f in self.sparse_history_flags if f.kpi_name == kpi_name]
+
+    def is_sparse(self, kpi_name: str, category: Optional[str] = None) -> bool:
+        """
+        Check if a KPI has a sparse-history flag.
+
+        Args:
+            kpi_name: KPI to check.
+            category: If None, checks for aggregate-level sparsity only.
+                      If a category name, checks for that specific category.
+        """
+        for f in self.sparse_history_flags:
+            if f.kpi_name == kpi_name and f.category == category:
+                return True
+        return False
+
+    def has_any_sparse(self, kpi_name: str) -> bool:
+        """Check if a KPI has ANY sparse-history flag (aggregate or per-category)."""
+        return any(f.kpi_name == kpi_name for f in self.sparse_history_flags)
+
+
 # ============================================================
 # KPI time-series preparation
 # ============================================================
@@ -390,19 +453,97 @@ def _rank_anomalies(anomalies: list[AnomalyResult]) -> list[AnomalyResult]:
 # ============================================================
 
 
+def check_sparse_history(
+    sales_df: pd.DataFrame,
+    roster_df: pd.DataFrame,
+    contract: ContractStore,
+) -> list[SparseHistoryFlag]:
+    """
+    Scan all KPIs and per-category series for insufficient history.
+
+    Returns explicit SparseHistoryFlag objects for every KPI or category
+    where there aren't enough data points to establish a reliable baseline.
+    This is distinct from "no anomaly found" — it's an explicit state that
+    downstream modules (confidence, UI) key off.
+    """
+    flags: list[SparseHistoryFlag] = []
+    sparse_config = contract.get_sparse_history_config()
+    min_daily = sparse_config.get("daily_kpi_min_days", 21)
+    min_monthly = sparse_config.get("monthly_kpi_min_months", 3)
+    sparse_label = sparse_config.get(
+        "label", "Insufficient history — cannot reliably assess this KPI movement."
+    )
+
+    df = sales_df.copy()
+    df["date"] = pd.to_datetime(df["date"])
+
+    # --- Check aggregate daily KPIs ---
+    daily_kpis = ["Revenue", "Units Sold", "Gross Margin %"]
+    for kpi_name in daily_kpis:
+        series = prepare_daily_kpi(df, kpi_name)
+        n_days = len(series)
+        if n_days < min_daily:
+            flags.append(SparseHistoryFlag(
+                kpi_name=kpi_name,
+                category=None,
+                grain="daily",
+                data_points_available=n_days,
+                data_points_required=min_daily,
+                message=sparse_label,
+                earliest_date=str(series["date"].min())[:10],
+                latest_date=str(series["date"].max())[:10],
+            ))
+
+    # --- Check per-category daily KPIs ---
+    for cat in sorted(df["product_category"].unique()):
+        cat_df = df[df["product_category"] == cat]
+        n_days = cat_df["date"].nunique()
+        if n_days < min_daily:
+            cat_dates = sorted(cat_df["date"].unique())
+            for kpi_name in daily_kpis:
+                flags.append(SparseHistoryFlag(
+                    kpi_name=kpi_name,
+                    category=cat,
+                    grain="daily",
+                    data_points_available=n_days,
+                    data_points_required=min_daily,
+                    message=f"{sparse_label} Category '{cat}' has only {n_days} days of data.",
+                    earliest_date=str(cat_dates[0])[:10],
+                    latest_date=str(cat_dates[-1])[:10],
+                ))
+
+    # --- Check monthly KPIs ---
+    roster = roster_df.copy()
+    n_months = roster["month"].nunique()
+    if n_months < min_monthly:
+        flags.append(SparseHistoryFlag(
+            kpi_name="Customer Churn Rate",
+            category=None,
+            grain="monthly",
+            data_points_available=n_months,
+            data_points_required=min_monthly,
+            message=sparse_label,
+            earliest_date=roster["month"].min(),
+            latest_date=roster["month"].max(),
+        ))
+
+    return flags
+
+
 def run_detection(
     sales_df: pd.DataFrame,
     roster_df: pd.DataFrame,
     contract: ContractStore,
     rolling_window: int = DEFAULT_ROLLING_WINDOW,
     zscore_threshold: float = DEFAULT_ZSCORE_THRESHOLD,
-) -> list[AnomalyResult]:
+) -> DetectionResult:
     """
     Run anomaly detection across all KPIs.
 
-    Returns a priority-ranked list of AnomalyResults — most severe first.
-    Each result contains all metadata needed for downstream modules
-    (decomposition, confidence, narration).
+    Returns a DetectionResult containing:
+      - anomalies: priority-ranked list of AnomalyResults (most severe first)
+      - sparse_history_flags: explicit flags for KPIs/categories with
+        insufficient history (distinct from "no anomaly found")
     """
     all_anomalies: list[AnomalyResult] = []
 
@@ -425,7 +566,13 @@ def run_detection(
     # Rank by severity
     ranked = _rank_anomalies(all_anomalies)
 
-    return ranked
+    # --- Check sparse history ---
+    sparse_flags = check_sparse_history(sales_df, roster_df, contract)
+
+    return DetectionResult(
+        anomalies=ranked,
+        sparse_history_flags=sparse_flags,
+    )
 
 
 # ============================================================
