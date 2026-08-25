@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data outputs (large files)
+backend/data/raw/*.db
+backend/data/raw/*.csv
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Misc
+*.log
