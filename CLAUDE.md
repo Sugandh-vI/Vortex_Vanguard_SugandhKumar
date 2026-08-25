@@ -387,3 +387,42 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 4 — Reconciliation + Driver Decomposition
+
+---
+
+## Iteration Log — Phase 4 (Reconciliation + Driver Decomposition) — 2026-08-25
+
+### What was done
+- Built `backend/engine/reconciliation.py`:
+  - **`spread_weekly_to_daily()`**: converts weekly marketing spend to daily by dividing by 7 (uniform spread, explicitly documented).
+  - **`align_monthly_to_window()`**: filters monthly roster data to months overlapping the analysis window (churn stays at monthly grain, no interpolation).
+  - **`compute_source_freshness()`**: calculates staleness (hours) for each source relative to analysis date, with fresh/stale status. Feeds into Phase 5 confidence scoring and Phase 11 telemetry panel.
+  - **`reconcile()`**: main entry point — aligns all 3 sources to a common analysis window, returns `ReconciliationResult` with aligned DataFrames + freshness metadata.
+
+- Built `backend/engine/decomposition.py` with 5 analytical methods:
+  - **`_price_volume_mix()`** (Revenue): classic PVM decomposition comparing anomaly day to rolling baseline. For each category: price_effect = (P1−P0)×V0, volume_effect = P0×(V1−V0), mix_effect = (P1−P0)×(V1−V0). Week 7 result: price −$3,032 (39.1%), volume −$5,207 (67.2%), mix +$489 (6.3%).
+  - **`_contribution_breakdown()`** (Units Sold): additive ΔUnits by category. Identifies which categories drove the movement.
+  - **`_margin_decomposition()`** (Gross Margin %): counterfactual analysis — "what would GM% be if only price changed?" Separates price contribution (−2.97pp) from cost contribution (+0.06pp). Electronics price cut accounts for ~102% of the margin compression.
+  - **`_churn_decomposition()`** (Customer Churn Rate): data completeness assessment + tenure cohort breakdown. Completeness = 70.2%, fails 90% quality gate. Cohort analysis shows 3-6mo tenure bucket has highest churn (22.1%).
+  - **`_marketing_correlation()`**: Pearson correlation between daily marketing spend and KPI values over a lookback window. Supporting signal only — explicitly labeled as "correlation, not causation."
+  - **`decompose_anomaly()`** + **`decompose_all()`**: main entry points dispatching to the right method per KPI.
+
+- Also fixed a Phase 3 issue before starting Phase 4:
+  - Added `SparseHistoryFlag` dataclass and `DetectionResult` container to `detection.py`. Sports & Outdoors now has explicit sparse-history flags (3 flags — one per daily KPI), distinct from "no anomaly found".
+  - Fixed `is_sparse()` to match on category exactly (passing `category=None` checks aggregate-level sparsity only). Added `has_any_sparse()` for broader checks.
+  - Verified z=−16.1 for GM% on May 13 is genuine, not an artifact: rolling std = 0.1812 (GM% is naturally very stable at ±0.18pp daily), and the 2.92pp drop is 16× the normal variation.
+
+- Committed to git (commit `8ff1cc4`).
+
+### Key decisions made
+- **PVM explains 100% mathematically** (price+volume+mix add up to total), but the volume drop itself is the "unexplained" part in business terms — we know Electronics units dropped 20%, but the engine has no data on why (competitor promo). This is exactly the "partial confidence, transparent about what's known vs unknown" scenario the brief asks for. Phase 5 will mark this as "medium confidence" due to the unexplained volume driver.
+- **Marketing correlation not included in explained_%**: it's tagged as `analytical_method: correlation` and excluded from the quantitative decomposition sum. It's a supporting signal, not a causal claim.
+- **Churn cohort breakdown uses tenure buckets** (<3mo, 3-6mo, 6-12mo, >12mo) rather than individual customer-level analysis — appropriate for a prototype and directly useful for actionable insights.
+- **Weekly marketing spread is uniform** (/7). In production you'd weight by day-of-week, but for a prototype this is explicitly documented and sufficient.
+- **GM% margin decomposition uses counterfactual approach**: simulates "what if only price changed but cost stayed at baseline?" to isolate price effect from cost effect. This correctly shows the Electronics price cut as the dominant margin driver.
+
+### What remains
+- Phase 4 is fully complete. All decomposition methods verified against scripted events.
+
+### Next phase (pending confirmation)
+- Phase 5 — Confidence Scoring & Abstention
