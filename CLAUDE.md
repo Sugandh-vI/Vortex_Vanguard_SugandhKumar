@@ -249,3 +249,30 @@ This log is how we track project state across sessions, so keep entries factual 
 - No Docker.
 - Build and confirm one phase at a time — do not jump ahead.
 - Append an iteration log entry to this file at the end of every session, in the exact format in Section 9.
+
+---
+
+## Iteration Log — Phase 0 (Project Setup) — 2026-08-25
+
+### What was done
+- Created the full folder structure exactly as specified in Section 6: `/backend/data/`, `/backend/data/raw/`, `/backend/contracts/`, `/backend/engine/`, `/backend/narration/`, `/backend/api/`, `/frontend/`, `/docs/`.
+- Created placeholder files for all future modules: `detection.py`, `reconciliation.py`, `decomposition.py`, `confidence.py`, `access_control.py`, `actions.py`, `telemetry.py`, `llm_client.py`, `prompts.py`, `generate_synthetic_data.py`, `kpi_contracts.yaml`.
+- Created `requirements.txt` with: fastapi, uvicorn, python-dotenv, pandas, numpy, sqlalchemy, groq, pyyaml, httpx.
+- Created `.env.example` with `GROQ_API_KEY=` placeholder.
+- Created `.gitignore` covering Python, .env, IDE files, data outputs (CSV/SQLite), and frontend build artifacts.
+- Created `README.md` with a human-facing project overview.
+- Built `backend/api/main.py` with a FastAPI app and `/health` endpoint returning `{"status":"healthy","service":"BusinessIntelligence.ai","version":"0.1.0"}`.
+- Set up Python venv at `backend/venv/`, installed all dependencies successfully.
+- Verified FastAPI health-check endpoint responds correctly (HTTP 200, correct JSON).
+- Initialized git repository, committed all files (20 files, root commit `0389fd0`).
+
+### Key decisions made
+- Used `.gitkeep` files to preserve empty directories (`raw/`, `docs/`, `frontend/`) in git.
+- Added CORS middleware with `allow_origins=["*"]` to the FastAPI app so the React frontend can connect during development.
+- Pinned minimum versions in requirements.txt (e.g., `fastapi>=0.104.0`) rather than exact pins, for flexibility on a prototype.
+
+### What remains
+- Phase 0 is fully complete. All checklist items verified.
+
+### Next phase (pending confirmation)
+- Phase 1 — Synthetic Data Generation
