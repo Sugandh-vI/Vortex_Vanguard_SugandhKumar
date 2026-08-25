@@ -309,3 +309,42 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 2 — Semantic Contract
+
+---
+
+## Iteration Log — Phase 2 (Semantic Contract) — 2026-08-25
+
+### What was done
+- Built `backend/contracts/kpi_contracts.yaml` — comprehensive semantic contract with all fields specified in Section 7:
+  - **4 KPIs defined**: Revenue, Units Sold, Gross Margin %, Customer Churn Rate.
+  - **3 data sources documented**: sales_transactions (daily), marketing_spend (weekly), customer_roster (monthly) — each with grain, refresh cadence, key columns, and description.
+  - Per-KPI fields: name, definition (plain English), formula, source_tables, grain, refresh_cadence, unit, persona_access, known_drivers (with type/source_column/decomposition_method), materiality_thresholds (pct_change + absolute_impact + impact_unit), lineage (primary + supporting column refs).
+  - **Access control**: Gross Margin % `persona_access` explicitly lists only CFO — Category Manager excluded with a comment explaining this is Event 4.
+  - **Data quality gate**: Customer Churn Rate has `data_quality_requirements.min_completeness: 0.90` — engine must abstain when completeness drops below 90%.
+  - **Confidence scoring config**: High/Medium/Low/Abstain levels with thresholds for explained %, data staleness, and history depth.
+  - **Sparse-history config**: `daily_kpi_min_days: 21`, `monthly_kpi_min_months: 3` — Sports & Outdoors (11 days) will correctly trigger "insufficient history."
+- Built `backend/contracts/loader.py` — `ContractStore` class with:
+  - YAML loading and full schema validation (checks required fields on KPIs, drivers, materiality; validates driver types; verifies source table references exist; raises `ContractValidationError` with detailed errors).
+  - Typed accessor methods: `list_kpis()`, `get_kpi()`, `is_accessible()`, `get_kpis_for_persona()`, `get_materiality()`, `get_drivers()`, `get_lineage()`, `get_source_meta()`, `get_confidence_config()`, `get_sparse_history_config()`, `get_data_quality_requirements()`, `get_formula()`, `get_definition()`, `get_grain()`, `get_unit()`.
+  - Custom exceptions: `ContractValidationError`, `KPINotFoundError`.
+- Verified all accessor methods return correct data:
+  - CFO sees all 4 KPIs; Category Manager sees 3 (Gross Margin % blocked) ✅
+  - Revenue materiality: 5% or $5,000 ✅
+  - Churn data quality: min_completeness=0.90 (our Month 3 has 70% → will trigger abstain) ✅
+  - Revenue drivers: unit_price, units_sold, product_mix, marketing_spend ✅
+  - Lineage traces back to specific table.column pairs ✅
+- Verified negative test cases: KPINotFoundError, ContractValidationError on bad YAML, FileNotFoundError — all work ✅
+- Committed to git (commit `a5a8134`).
+
+### Key decisions made
+- Added `decomposition_method` field to each driver (e.g., `price_volume_mix`, `correlation`, `contribution`, `cohort_analysis`) so Phases 4-5 can look up which analytical method to apply per driver, directly from the contract.
+- Included `unit` field per KPI (USD, units, percent) for display and narration formatting.
+- Set Revenue materiality at 5% / $5,000 (not $10,000) because our daily baseline is ~$56K, so $10K would require an ~18% swing to trigger — too high. $5K ≈ 9% of baseline, reasonable for flagging the Week 7 event.
+- Sparse history threshold set at 21 days (not 14) for daily KPIs — Sports & Outdoors with 11 days is well below this, giving a clean "insufficient history" trigger without being borderline.
+- Confidence `abstain` triggers include `contradictory_signals` as a future-proofing hook.
+
+### What remains
+- Phase 2 is fully complete. Contract validated, loader tested.
+
+### Next phase (pending confirmation)
+- Phase 3 — Detection Engine
