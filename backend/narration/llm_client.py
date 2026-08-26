@@ -58,6 +58,11 @@ except Exception:  # dotenv is optional; env vars can be set directly
 DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434"
 DEFAULT_OLLAMA_MODEL = "minimax-m3:cloud"
 DEFAULT_TIMEOUT_SECONDS = 60
+# Reasoning/cloud models may spend a large share of `num_predict` on
+# thinking before emitting visible content. 1024 was observed to truncate
+# ALL outputs (and produce empty content when the whole budget went to
+# reasoning), so the default is raised and made configurable.
+DEFAULT_MAX_TOKENS = 4096
 
 
 def _env_or(key: str, default: str) -> str:
@@ -70,6 +75,18 @@ def ollama_base_url() -> str:
 
 def ollama_model() -> str:
     return _env_or("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL)
+
+
+def ollama_max_tokens() -> int:
+    try:
+        return max(256, int(_env_or("OLLAMA_MAX_TOKENS", str(DEFAULT_MAX_TOKENS))))
+    except ValueError:
+        return DEFAULT_MAX_TOKENS
+
+
+def ollama_disable_thinking() -> bool:
+    """True sends `think: false` to Ollama (reasoning models only)."""
+    return _env_or("OLLAMA_DISABLE_THINKING", "false").strip().lower() in ("1", "true", "yes")
 
 
 def mock_mode_enforced() -> bool:
@@ -119,7 +136,7 @@ class LLMProvider(ABC):
 
 @dataclass
 class LLMResponse:
-    """Normalized provider response: text + usage metadata."""
+    """Normalized provider response: text + usage + raw diagnostics."""
 
     text: str
     usage: dict = field(default_factory=dict)  # prompt_tokens, completion_tokens, ...
@@ -128,6 +145,7 @@ class LLMResponse:
     latency_ms: float = 0.0
     raw: Any = None
     mock: bool = False
+    meta: dict = field(default_factory=dict)  # done_reason, thinking, truncation, ...
 
 
 # ============================================================
@@ -146,13 +164,14 @@ class OllamaProvider(LLMProvider):
         model: Optional[str] = None,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
         temperature: float = 0.2,
-        max_tokens: int = 1024,
+        max_tokens: Optional[int] = None,
     ):
         self.base_url = (base_url or ollama_base_url()).rstrip("/")
         self.model = model or ollama_model()
         self.timeout = timeout
         self.temperature = temperature
-        self.max_tokens = max_tokens
+        self.max_tokens = max_tokens or ollama_max_tokens()
+        self.disable_thinking = ollama_disable_thinking()
 
     def is_available(self) -> bool:
         """Ping /api/tags — cheap, does not generate tokens."""
@@ -164,18 +183,24 @@ class OllamaProvider(LLMProvider):
 
     def complete(self, prompt: str) -> LLMResponse:
         start = time.perf_counter()
+        body = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+            "options": {
+                "temperature": self.temperature,
+                "num_predict": self.max_tokens,
+            },
+        }
+        # Reasoning models can spend the entire token budget on thinking
+        # and emit empty content; callers can disable thinking via env.
+        if self.disable_thinking:
+            body["think"] = False
+
         try:
             resp = httpx.post(
                 f"{self.base_url}/api/chat",
-                json={
-                    "model": self.model,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "stream": False,
-                    "options": {
-                        "temperature": self.temperature,
-                        "num_predict": self.max_tokens,
-                    },
-                },
+                json=body,
                 timeout=self.timeout,
             )
             resp.raise_for_status()
@@ -185,19 +210,41 @@ class OllamaProvider(LLMProvider):
                 f"Ollama at {self.base_url} unreachable: {e}"
             ) from e
 
-        content = ""
         message = data.get("message") or {}
         content = message.get("content", "")
         if not content and isinstance(data.get("response"), str):
             content = data["response"]
 
-        usage = data.get("prompt_eval_count", 0) or 0
+        # Raw-response diagnostics (for debugging empty/truncated replies):
+        # message keys reveal whether the model returned reasoning content
+        # in a separate field (e.g. "thinking"/"reasoning"), `done_reason`
+        # tells us if generation was cut off ("length" = token budget hit).
+        thinking = message.get("thinking") or message.get("reasoning") or ""
+        eval_count = int(data.get("eval_count", 0) or 0)
+        done_reason = data.get("done_reason")
+        finish_reason = data.get("finish_reason")
+        meta = {
+            "message_keys": sorted(str(k) for k in message.keys()),
+            "done_reason": done_reason,
+            "finish_reason": finish_reason,
+            "thinking_present": bool(str(thinking).strip()),
+            "thinking_chars": len(str(thinking)),
+            "content_chars": len(str(content)),
+            "eval_count": eval_count,
+            "num_predict_cap": self.max_tokens,
+            "suspected_reasoning_only": (
+                not str(content).strip()
+                and eval_count >= self.max_tokens
+            ),
+            "truncated_by_length": done_reason == "length"
+            or finish_reason == "length",
+        }
+
         usage = {
             "prompt_tokens": int(data.get("prompt_eval_count", 0) or 0),
-            "completion_tokens": int(data.get("eval_count", 0) or 0),
+            "completion_tokens": eval_count,
             "total_tokens": int(
-                (data.get("prompt_eval_count", 0) or 0)
-                + (data.get("eval_count", 0) or 0)
+                (data.get("prompt_eval_count", 0) or 0) + eval_count
             ),
             "model": self.model,
             "provider": self.name,
@@ -211,6 +258,7 @@ class OllamaProvider(LLMProvider):
             latency_ms=round((time.perf_counter() - start) * 1000, 1),
             raw=data,
             mock=False,
+            meta=meta,
         )
 
 

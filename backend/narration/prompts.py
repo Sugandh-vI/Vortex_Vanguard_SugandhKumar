@@ -319,14 +319,32 @@ def allowed_string_facts(facts: dict) -> set[str]:
     }
 
 
+# A narrative shorter than this is not a deliverable — an empty/mock-ish
+# response must FAIL the check, not trivially pass (no numbers = no
+# violations). 10 words is a deliberately low bar: it only rejects
+# empty/placeholder responses, not legitimate short answers.
+MIN_NARRATIVE_WORDS = 10
+
+
 def narrative_is_grounded(text: str, facts: dict) -> tuple[bool, list[str]]:
     """
     Strictness check: every numeric token in `text` must be grounded in
     the fact set (either an exact allowed number, or a fragment of an
     allowed string fact such as the period). Returns (ok, violations).
+
+    An empty or near-empty narrative is a HARD FAIL: an empty string has
+    no numbers, so it would otherwise "pass" while hiding a real LLM
+    failure (empty completion / truncation / reasoning-only output).
+
     Used to be *sure* mock output is grounded; in production this is the
     test harness for the prompt contract the real LLM is asked to follow.
     """
+    word_count = len(str(text).split())
+    if word_count < MIN_NARRATIVE_WORDS:
+        return False, [
+            f"NARRATIVE_TOO_SHORT ({word_count} words, minimum {MIN_NARRATIVE_WORDS})"
+        ]
+
     allowed = allowed_numbers(facts)
     strings = allowed_string_facts(facts)
     violations = []

@@ -620,3 +620,31 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+
+---
+
+## Iteration Log — Phase 8 Fix (Empty/Truncated Real-Narration Detection) — 2026-08-26
+
+### What was done
+- User's local run of `test_real_narration.py` exposed a **false-positive PASS**: runs 1, 2, 6 (Revenue CFO/CM, Churn CM) returned completely empty narratives, yet the summary said "6/6 PASSED" — `narrative_is_grounded("")` trivially passes (no numbers = no violations). Runs 3, 4, 5 were real, grounded, and persona-differentiated but ALSO truncated mid-sentence (run 3 ends at "contribution_value", run 4 at "source data and", run 5 at "and history").
+- **Root cause (diagnosed from the pasted metadata):** every single run reported `completion=1024` — exactly the `num_predict` cap (1024) in `OllamaProvider`. The model (reasoning-type `minimax-m3:cloud`) spends a variable share of its token budget on internal reasoning before emitting visible text; on the three failing runs it consumed the ENTIRE budget pre-content → `message.content` empty while `eval_count=1024`. Non-deterministic reasoning allocation explains why Churn-CFO passed while the near-identical Churn-CM prompt failed. Runs 3-5 "passed" but were also cut off (finish_reason would be `length`).
+- Fixes:
+  - **`prompts.py` — `narrative_is_grounded()` now hard-fails empty/near-empty:** `MIN_NARRATIVE_WORDS = 10`; <10 words → `(False, ["NARRATIVE_TOO_SHORT (N words, minimum 10)"])`, checked BEFORE the number scan. Verified: empty / whitespace / `[MOCK]` / 8-word sentences → FAIL; grounded narrative → PASS; invented number → FAIL listing the token.
+  - **`llm_client.py` — raise the token budget + expose raw diagnostics:** default `num_predict` 1024 → **4096** (env `OLLAMA_MAX_TOKENS`, min 256), and `LLMResponse.meta` now carries `message_keys`, `done_reason`, `finish_reason`, `thinking_present`, `thinking_chars`, `content_chars`, `eval_count`, `num_predict_cap`, `suspected_reasoning_only`, `truncated_by_length` — populated from `resp.raw` so an empty reply can be diagnosed (e.g. content hidden in `message.thinking`/`reasoning`, or `done_reason=length`). New env `OLLAMA_DISABLE_THINKING=true` sends `think: false` to Ollama for reasoning models that burn the budget.
+  - **`test_real_narration.py`:** prints the raw-response diagnostics + thinking preview per run; sanity now includes `narrative_nonempty` (≥10 words) and `narrative_not_truncated`; the verdict is PASS only if fully grounded AND non-empty AND untruncated; the summary's FAIL entries now carry an explicit `why` list (empty narrative is called out as "previously a false-positive PASS, now a hard FAIL"; truncation points at the num_predict cap). Exit codes unchanged (0 all-pass, 1 any-fail, 2 hard abort).
+  - **`.env.example`:** documented `OLLAMA_MAX_TOKENS=4096` and `OLLAMA_DISABLE_THINKING=false`.
+- Validated in-sandbox (no real LLM call): `py_compile` clean; empty/whitespace/near-empty grounds to FAIL; grounded + invented-number cases behave; simulated StubEmptyProvider (empty content, `done_reason=length`, thinking field present) → report now FAILs with `narrative_nonempty=False`, `narrative_not_truncated=False`, `NARRATIVE_TOO_SHORT` violation; mock non-empty narrative regression-checked as grounded PASS.
+
+### Key decisions made
+- **Empty narrative is a FAIL inside `narrative_is_grounded` itself**, not only in the harness — the pure utility was the place the bug lived and it could mask failures anywhere it is reused.
+- **Truncation counts as FAIL**, not a warning: a narrative cut off by the token budget is an incomplete deliverable, and `done_reason/finish_reason=length` is now surfaced so it is not silent.
+- **Budget, not prompt content, is the primary fix:** the failing calls were not prompt-constraint violations — the model never got a chance to emit content. 4096 tokens gives reasoning + full narrative headroom; `OLLAMA_DISABLE_THINKING` is the fallback knob if empties recur.
+- All prior grounding/persona results (runs 3-5 content) remain valid evidence that the prompt hard-constraint works with the real model.
+
+### What remains
+- **User should re-run `python test_real_narration.py` from `backend/`** with `OLLAMA_MAX_TOKENS` at the new default (4096). Expected: 6/6 with all narratives non-empty, untruncated, grounded; `done_reason` should be `stop` (not `length`). If any run still returns empty → set `OLLAMA_DISABLE_THINKING=true` and re-run; report the `message_keys`/`done_reason` diagnostics if it persists.
+- Phase 8 remains unconfirmed until a genuine 6/6 (all narratives non-empty, untruncated, grounded) is achieved.
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+

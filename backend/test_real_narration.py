@@ -162,16 +162,36 @@ def run_one(client: LLMClient, ctx: dict, kpi: str, period: str) -> dict:
         print("UNEXPECTED ERROR:", repr(exc))
         return {"error": repr(exc)}
 
-    # Real-response sanity (no silent mock, no fake metadata)
+    # Raw-response diagnostics from the provider (message keys,
+    # done_reason, thinking content) — surfaced so empty/truncated
+    # replies can be diagnosed, not just the parsed narrative field.
+    meta = resp.meta or {}
+    print("\nRaw-response diagnostics (from resp.raw/meta):")
+    print(json.dumps(meta, indent=2, default=str))
+    if meta.get("thinking_present"):
+        preview = str(resp.raw.get("message", {}).get(
+            "thinking") or resp.raw.get("message", {}).get("reasoning") or "")[:300]
+        print(f"Thinking preview (first 300 of {meta.get('thinking_chars')} chars): {preview!r}")
+
+    narrative_chars = len(str(resp.text).strip())
+    narrative_words = len(str(resp.text).split())
+    narrative_nonempty = narrative_words >= 10   # matches MIN_NARRATIVE_WORDS
+    narrative_truncated = bool(meta.get("truncated_by_length"))
+
+    # Real-response sanity (no silent mock, no fake metadata, no empty
+    # or truncated narrative)
     sanity = {
         "provider_is_ollama": resp.provider == "ollama",
         "mock_flag_false": resp.mock is False,
         "no_mock_prefix": "[MOCK]" not in resp.text,
         "usage_from_model_metadata": resp.usage.get("source") == "llm_response_metadata",
+        "narrative_nonempty": narrative_nonempty,
+        "narrative_not_truncated": not narrative_truncated,
     }
     print(
-        "\nReal-response sanity: " + json.dumps(sanity)
-        + f"\nLatency: {resp.latency_ms:.0f} ms | tokens: "
+        "\nReal-response sanity: " + json.dumps(sanity, indent=2)
+        + f"\nNarrative: {narrative_chars} chars, {narrative_words} words"
+        + f" | Latency: {resp.latency_ms:.0f} ms | tokens: "
         f"prompt={resp.usage.get('prompt_tokens')}, "
         f"completion={resp.usage.get('completion_tokens')}, "
         f"total={resp.usage.get('total_tokens')} "
@@ -206,6 +226,10 @@ def run_one(client: LLMClient, ctx: dict, kpi: str, period: str) -> dict:
         "grounded": grounded,
         "violations": violations,
         "narrative": resp.text,
+        "narrative_chars": narrative_chars,
+        "narrative_words": narrative_words,
+        "narrative_truncated": narrative_truncated,
+        "meta": meta,
     }
 
 
@@ -270,12 +294,33 @@ def main() -> int:
 
             ok = report["sanity_ok"] and report["grounded"]
             if not ok:
+                why = []
+                if not report["sanity"].get("narrative_nonempty"):
+                    why.append(
+                        f"EMPTY/NEAR-EMPTY NARRATIVE "
+                        f"({report['narrative_words']} words) — previously a "
+                        f"false-positive PASS, now a hard FAIL"
+                    )
+                if report["sanity"].get("narrative_not_truncated") is False:
+                    why.append(f"TRUNCATED (done_reason/finish_reason = length; "
+                               f"completion tokens hit the num_predict cap)")
+                if report["sanity"].get("provider_is_ollama") is False:
+                    why.append("provider is not ollama")
+                if report["sanity"].get("mock_flag_false") is False:
+                    why.append("mock flag is not false")
+                if report["sanity"].get("no_mock_prefix") is False:
+                    why.append("[MOCK] prefix present")
+                if report["sanity"].get("usage_from_model_metadata") is False:
+                    why.append("usage source is not llm_response_metadata")
+                if report["grounded"] is False:
+                    why.append(f"ungrounded numbers: {report['violations']}")
                 failures.append({
                     "scenario": f"{kpi} @ {period} / {persona}",
                     "sanity_ok": report["sanity_ok"],
                     "sanity": report["sanity"],
                     "grounded": report["grounded"],
                     "violations": report["violations"],
+                    "why": why,
                 })
             print("\n=> RESULT: " + ("PASS" if ok else "FAIL"))
 
