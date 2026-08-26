@@ -462,3 +462,33 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 5 — Confidence Scoring & Abstention
+
+---
+
+## Iteration Log — Phase 5 (Confidence Scoring & Abstention) — 2026-08-26
+
+### What was done
+- Built `backend/engine/confidence.py` (placeholder → full module):
+  - **`ConfidenceResult`** dataclass: kpi_name, period, category, status (high/medium/low/abstain), 0–100 `score`, `business_explained_pct`, `arithmetic_explained_pct`, `data_staleness_hours`, `history_points`/`history_unit`/`history_required`, `data_completeness`, `level_thresholds` (per-level criteria + pass/fail), `attribution_detail` (per-driver weight trace), `reasons`, `abstain_reasons`, `insufficient_history`, `contradiction_detail`, `message`. All values are native Python types — JSON-serializable.
+  - **`ConfidenceResultSet`** container + `analyze(...)` convenience pipeline (detection → reconciliation → decomposition → confidence) and `score_all(...)` batch entry point.
+  - **Business-explained % (the core design point):** PVM sums to 100% arithmetically, so that number is NOT used as the confidence input. Each driver contribution carries an **attribution weight**: `1.0` = known business cause (price_effect in PVM, unit_price in margin decomposition), `0.5` = measured & localized but cause unknown (volume_effect, contribution breakdowns, cost/mix residual), `0.0` = informational/mechanical (mix interaction, correlation, cohort, completeness). `business_explained_pct = |Σ contribution × weight| / |total movement|`. Documented as a deterministic heuristic in code with a full comment.
+  - **Level determination (top-down, all thresholds from the contract):** High requires explained ≥80% AND staleness ≤48h AND history ≥30 days (≥3 months); Medium ≥50% / ≤168h / ≥14d (≥2mo); Low ≥20% / ≤720h / ≥7d (≥1mo). Level tests read the contract `confidence.levels` config directly; `score` = weakest-link min of the three dimension scores (explained / freshness / history).
+  - **Abstain triggers (checked first, ANY hit → abstain, no score):** (a) data completeness below the KPI's `data_quality_requirements.min_completeness` (churn 0.90), (b) insufficient history — from detection's `insufficient_history` flag (21 days / 3 months per `sparse_history` config), (c) contradictory signals — deterministic rule: two opposing quantified drivers each ≥20% of gross driver magnitude with net <50% of gross (future-proofing hook; does not trigger on current data).
+  - Sparse-history flags (Sports & Outdoors, 11/21 days) become explicit `abstain` results with `abstain_reasons=["insufficient_history"]` and the contract's label message — a distinct, visible state, not "no anomaly".
+  - Freshness feeds in from `reconciliation.source_freshness` via the KPI's primary source; `analyze(as_of_date=...)` exercises the staleness dimension (verified: as-of 45 days after data end → staleness 1080h → Revenue capped to Low with score 0).
+- Verified against the synthetic data (27 results): Week 7 Revenue May 13 → **medium** (business_explained 72.7%, arithmetic 100.0%); Week 7 Gross Margin → **high** (100.0%); Week 7 Units → **medium** (50.0%); **June churn → abstain** (completeness 70.2% < 90%); **Sports & Outdoors → abstain** (insufficient history 11/21); May churn → abstain (1 prior month < 3); early Units anomalies (12/20 prior days) → abstain (insufficient history). All 27 results `json.dumps`-clean; every assertion script passed.
+
+### Key decisions made
+- **Arithmetic ≠ business explained:** the volume drop is the "unknown cause" (competitor promo) so Week 7 Revenue is Medium, not High, despite PVM = 100%. Weights (1.0 / 0.5 / 0.0) are deliberately coarse, deterministic, documented in code, and produce the Phase 4 log's promised "medium confidence due to the unexplained volume driver".
+- **Level = contract membership test, top-down** (all criteria must pass); `score` is a secondary weakest-link metric for display/ranking, not the level source — a Medium due to 100h staleness keeps its contract-correct badge.
+- **History depth = prior periods at detection time** (`data_points_used`), matching detection's own sparse-history bar — avoids the "21 days vs minimum 21" off-by-one ambiguity and keeps the abstain message truthful.
+- **Staleness beyond 720h** does not abstain (the contract lists no staleness abort trigger) — it floors to Low with score 0; noted as a possible future abstain trigger to discuss.
+- Attribution weights live in `confidence.py` as a documented table rather than in the contract, to keep Phase 5 self-contained; they could be promoted into `kpi_contracts.yaml` later if the contract should own them.
+- Per-category anomalies from `detect_by_category()` are not scored (they are not part of `DetectionResult`); only per-category *sparse flags* are. Aggregates are scored — sufficient for the brief's scenarios.
+
+### What remains
+- Phase 5 is fully complete per Section 8 (High/Medium/Low/Abstain logic, churn abstain, new-product insufficient history). No open issues.
+- Future: Phase 8 narration will consume `ConfidenceResult` messages/reasons; Phase 11 UI will render the badge + threshold transparency.
+
+### Next phase (pending confirmation)
+- Phase 6 — Access Control (persona → KPI/column permission filter enforced before narration; must block Gross Margin % for Category Manager and log the block)
