@@ -599,3 +599,24 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+
+---
+
+## Iteration Log — Phase 8 Verification Harness (Real Ollama Test Script) — 2026-08-26
+
+### What was done
+- Added `backend/test_real_narration.py` — a standalone harness for the user to run LOCALLY against their real `ollama serve` (the cloud sandbox has no Ollama access, so real calls are untestable here).
+- It runs the exact Phase 8 mock-test scenarios (Week 7 Revenue 2024-05-13, Week 7 Gross Margin % 2024-05-13, June churn 2024-06) × personas (CFO, Category Manager) = 6 real calls, and for each prints: (1) `client.describe()` JSON (must show provider=ollama, mock=False), (2) the full narrative, (3) `narrative_is_grounded()` PASS/FAIL with any ungrounded numeric claims listed.
+- **Hard fail-fast guards (exit 2):** refuses to run if `LLM_MOCK_MODE=true`, and refuses a silent mock fallback — if Ollama is unreachable or the client resolves to anything but `provider=ollama`/`mock=False`, it aborts with actionable hints (`ollama serve`, `ollama pull minimax-m3:cloud`, .env check). Per-call failures surface as per-scenario FAILs, never hidden.
+- Validated in the sandbox (without making any real Ollama call): `py_compile` clean; both abort paths exit 2 with correct FATAL messages; and the full body (build_context pipeline → run_one per scenario → describe/narrative/grounding printing → report dicts) was exercised in-process with a mock client injected — all three scenarios report grounded=True with the exact output format the user will see.
+
+### Key decisions made
+- Harness is a deliverable committed to the repo (not a throwaway), since the user pulls the branch to run it locally; it lives in `backend/` so `from contracts/...`, `from engine/...`, `from narration/...` resolve without PYTHONPATH tricks when run as `python test_real_narration.py`.
+- **No silent fallback, ever, in this harness:** mock output is useless for validating the real LLM, so the script treats a wrong provider as a hard failure rather than a soft warning.
+- Output includes real usage metadata (`prompt_eval_count`/`eval_count`, latency ms, `source=llm_response_metadata`) so the user can also confirm Phase 10 telemetry wiring has real data to consume.
+
+### What remains
+- Pending the user's local run of `python test_real_narration.py` (from `backend/` with venv active). Expect: 6 runs, describe shows provider=ollama/mock=False, usage source=llm_response_metadata, and all 6 grounding checks PASS for the phase to be declared confirmed.
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
