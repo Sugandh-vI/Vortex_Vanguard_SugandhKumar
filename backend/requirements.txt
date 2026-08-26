@@ -8,8 +8,8 @@ pandas>=2.1.0
 numpy>=1.26.0
 sqlalchemy>=2.0.0
 
-# LLM (Groq free tier)
-groq>=0.4.0
+# LLM (Ollama — local serve with cloud-backed models)
+ollama>=0.4.0
 
 # Utilities
 pyyaml>=6.0.0

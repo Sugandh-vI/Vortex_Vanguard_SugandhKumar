@@ -1,1 +1,1 @@
-# Groq client wrapper + mock-mode fallback — Phase 8
+# Provider-agnostic LLM client (Ollama default) + mock-mode fallback — Phase 8

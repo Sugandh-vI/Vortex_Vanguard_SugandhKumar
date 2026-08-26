@@ -15,7 +15,7 @@ We are building a prototype for the **BusinessIntelligence.ai** track of the Acc
 
 ### Budget constraint — read this carefully
 
-This project must be built with **$0 cost**. No OpenAI or Anthropic API keys are available or should ever be used in this codebase. The only LLM calls allowed are via the **Groq API** (free tier), using an open model such as `llama-3.3-70b-versatile`. If Groq is unavailable or a key isn't yet supplied, the system should still run in a "mock LLM" mode that returns a clearly-labeled placeholder narrative, so the rest of the pipeline is always testable without a key.
+This project must be built with **$0 cost**. No OpenAI or Anthropic API keys are available or should ever be used in this codebase. The only LLM calls allowed are via a **local Ollama instance** pointing at a cloud-backed model (e.g., `minimax-m3:cloud` via `ollama serve`), which is free-tier. The `llm_client.py` module must be **provider-agnostic** (a simple interface that any OpenAI-compatible backend could satisfy), so the actual provider is a config detail, not hardcoded. If Ollama is unavailable or a model isn't yet pulled, the system should still run in a "mock LLM" mode that returns a clearly-labeled placeholder narrative, so the rest of the pipeline is always testable without a running model.
 
 ---
 
@@ -26,7 +26,7 @@ We evaluated four architecture options and chose the following, deliberately rej
 **Chosen approach: "Deterministic Core, LLM Narrator."**
 
 - Detection, reconciliation, driver decomposition, confidence scoring, and access control are all done in plain Python (pandas/numpy/stats) — no LLM involved.
-- A single, tightly-scoped LLM call (via Groq) takes the final structured JSON output and renders it into persona-specific natural language, constrained by a system prompt that forbids introducing facts not present in the JSON.
+- A single, tightly-scoped LLM call (via Ollama) takes the final structured JSON output and renders it into persona-specific natural language, constrained by a system prompt that forbids introducing facts not present in the JSON.
 - A visible "LLM vs non-LLM" breakdown is shown for every insight, satisfying the brief's explicit requirement to distinguish these.
 
 ---
@@ -98,9 +98,9 @@ All other weeks should have small, realistic natural noise so the scripted anoma
 - **Language:** Python 3.11+ for all backend/analytics logic.
 - **Data handling:** pandas, numpy for time series and decomposition math; SQLite (via `sqlite3` or SQLAlchemy) for storing the synthetic tables — no external DB needed.
 - **API layer:** FastAPI, serving both the analytics engine and the LLM narration endpoint.
-- **LLM:** Groq API via the `groq` Python SDK. Model: `llama-3.3-70b-versatile` for narration; a mock-mode fallback must exist for when no `GROQ_API_KEY` is set.
+- **LLM:** Ollama (local `ollama serve` pointing at a cloud-backed model such as `minimax-m3:cloud`). The `llm_client.py` module exposes a provider-agnostic interface (any OpenAI-compatible backend works), so the actual provider is a `.env` config detail. A mock-mode fallback must exist for when no model is available.
+- **Config/secrets:** `.env` file for `OLLAMA_BASE_URL` (default `http://localhost:11434`), `OLLAMA_MODEL` (default `minimax-m3:cloud`), loaded via `python-dotenv`. Never hardcode keys. `.env` must be in `.gitignore`.
 - **Frontend:** React + Tailwind CSS, built as a lightweight custom "mini Power BI" dashboard — KPI trend charts, an insight feed with confidence badges, a persona switcher, and a telemetry panel. (No third-party BI tool is used — we are building this ourselves.)
-- **Config/secrets:** `.env` file for `GROQ_API_KEY`, loaded via `python-dotenv`. Never hardcode keys. `.env` must be in `.gitignore`.
 - **No Docker.** We are not containerizing this project — plain venv + requirements.txt is sufficient for a local prototype and a screen-recorded demo.
 - **Version control:** Git/GitHub from the start of the project, committed incrementally per phase (see Section 8).
 
@@ -127,7 +127,7 @@ Set this up exactly as follows before writing any feature code:
       actions.py                        # driver -> lever -> action lookup
       telemetry.py                      # latency/token/cost tracking wrapper
     /narration
-      llm_client.py                     # Groq client wrapper + mock-mode fallback
+      llm_client.py                     # Provider-agnostic LLM client (Ollama default) + mock-mode fallback
       prompts.py                        # system prompts, persona-conditioned templates
     /api
       main.py                           # FastAPI app, all endpoints
@@ -195,7 +195,7 @@ Work through the phases below **one at a time, in order**. After finishing a pha
 - Driver → controllable lever → action → expected impact → owner → confidence → monitoring plan, as a lookup/rules table (not LLM-generated).
 
 ### Phase 8 — LLM Narration Layer
-- Groq client wrapper with mock-mode fallback.
+- Provider-agnostic LLM client (`llm_client.py`) with Ollama as the default backend and mock-mode fallback.
 - System prompt strictly constraining the model to only use facts present in the JSON payload it's given.
 - Persona-conditioned templates (CFO vs Category Manager tone/depth).
 
@@ -204,7 +204,7 @@ Work through the phases below **one at a time, in order**. After finishing a pha
 - A small explanation in the UI/docs of how this would feed back into confidence weighting over time (does not need real retraining for the prototype).
 
 ### Phase 10 — Telemetry
-- Wrap the LLM call and the analytics pipeline to record latency, token usage (from Groq response), and an estimated cost-at-scale figure, exposed via an API endpoint and shown in the UI.
+- Wrap the LLM call and the analytics pipeline to record latency, token usage (from LLM response metadata), and an estimated cost-at-scale figure, exposed via an API endpoint and shown in the UI.
 
 ### Phase 11 — Frontend Dashboard
 - KPI trend charts, insight feed with confidence badges, persona switcher, LLM-vs-non-LLM indicator per card, access-blocked state, telemetry panel.
@@ -244,7 +244,7 @@ This log is how we track project state across sessions, so keep entries factual 
 ## 10. Ground Rules Recap
 
 - No paid API keys (OpenAI/Anthropic) anywhere in this codebase, ever.
-- Only Groq is used for LLM calls, with a working mock-mode fallback.
+- Only Ollama (or compatible provider) is used for LLM calls, with a working mock-mode fallback.
 - LLM never computes numbers — only narrates already-computed JSON.
 - No Docker.
 - Build and confirm one phase at a time — do not jump ahead.
@@ -257,8 +257,8 @@ This log is how we track project state across sessions, so keep entries factual 
 ### What was done
 - Created the full folder structure exactly as specified in Section 6: `/backend/data/`, `/backend/data/raw/`, `/backend/contracts/`, `/backend/engine/`, `/backend/narration/`, `/backend/api/`, `/frontend/`, `/docs/`.
 - Created placeholder files for all future modules: `detection.py`, `reconciliation.py`, `decomposition.py`, `confidence.py`, `access_control.py`, `actions.py`, `telemetry.py`, `llm_client.py`, `prompts.py`, `generate_synthetic_data.py`, `kpi_contracts.yaml`.
-- Created `requirements.txt` with: fastapi, uvicorn, python-dotenv, pandas, numpy, sqlalchemy, groq, pyyaml, httpx.
-- Created `.env.example` with `GROQ_API_KEY=` placeholder.
+- Created `requirements.txt` with: fastapi, uvicorn, python-dotenv, pandas, numpy, sqlalchemy, pyyaml, httpx.
+- Created `.env.example` with `OLLAMA_BASE_URL=http://localhost:11434` and `OLLAMA_MODEL=minimax-m3:cloud` placeholders.
 - Created `.gitignore` covering Python, .env, IDE files, data outputs (CSV/SQLite), and frontend build artifacts.
 - Created `README.md` with a human-facing project overview.
 - Built `backend/api/main.py` with a FastAPI app and `/health` endpoint returning `{"status":"healthy","service":"BusinessIntelligence.ai","version":"0.1.0"}`.
@@ -426,3 +426,20 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 5 — Confidence Scoring & Abstention
+
+---
+
+## Iteration Log — Spec Change (LLM Provider: Groq → Ollama) — 2026-08-26
+
+### What changed
+- Replaced all references to Groq API / Llama 3.3 70B with **Ollama** (local `ollama serve` pointing at a cloud-backed model such as `minimax-m3:cloud`).
+- Updated CLAUDE.md Sections 1, 2, 5, 6, 8, 10, and Ground Rules. Updated `requirements.txt` (`groq` → `ollama`), `.env.example` (`GROQ_API_KEY` → `OLLAMA_BASE_URL` + `OLLAMA_MODEL`), `README.md`, and `llm_client.py` placeholder comment.
+- Added spec requirement: `llm_client.py` must expose a **provider-agnostic interface** (any OpenAI-compatible backend works), so the actual provider is a `.env` config detail, not hardcoded.
+- Mock-mode fallback requirement is **unchanged** — system must be fully testable without a running LLM.
+
+### Why
+- Ollama's cloud backend provides free-tier access to strong models (minimax-m3) without needing a separate API key — just `ollama serve` + `ollama pull minimax-m3:cloud`.
+- Provider-agnostic interface means we can swap to Groq, OpenAI, or any other backend with a single `.env` change if needed during the demo.
+
+### No code changes to engine modules
+- This is a doc/config-only change. Phases 1-4 (data, contract, detection, decomposition) are unaffected since they don't touch the LLM layer.
