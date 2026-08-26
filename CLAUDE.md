@@ -443,3 +443,22 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### No code changes to engine modules
 - This is a doc/config-only change. Phases 1-4 (data, contract, detection, decomposition) are unaffected since they don't touch the LLM layer.
+
+---
+
+## Iteration Log — Bug Fix (Churn Decomposition JSON Serialization) — 2026-08-26
+
+### What was done
+- Fixed `_churn_decomposition()` in `backend/engine/decomposition.py`: numpy scalars leaking into the `DriverContribution.detail` dict (`null_records` as `np.int64`, `passes_quality_gate` as `np.bool_`, plus `np.float64` on `completeness_pct` / `contribution_value` / cohort `churn_rate`) were causing `json.dumps()` to raise `TypeError: Object of type int64 is not JSON serializable` on the June churn decomposition.
+- Cast all of them to native Python types with `int()` / `float()` / `bool()`; the cohort breakdown rows already cast `total`/`churned` with `int()` and are untouched.
+- Verified: all 24 decompositions (Revenue, Units Sold, Gross Margin %, Customer Churn Rate) now serialize to JSON cleanly; June churn detail shows `total_records=1036 (int)`, `null_records=309 (int)`, `passes_quality_gate=False (bool)`, `completeness_pct=70.2 (float)`.
+
+### Key decisions made
+- Scoped fix to `_churn_decomposition()` only — this was the single function leaking non-serializable scalars (all other decomposition outputs already passed `json.dumps`). No API/serialization helper was added.
+- Left `prior_df` (computed but unused in `_churn_decomposition()`) untouched — out of scope for this bug fix.
+
+### What remains
+- Bug fix is fully complete and verified.
+
+### Next phase (pending confirmation)
+- Phase 5 — Confidence Scoring & Abstention

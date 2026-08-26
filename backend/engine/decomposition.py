@@ -519,19 +519,22 @@ def _churn_decomposition(
     drivers = []
 
     # Data completeness driver
+    # NOTE: all numpy scalars (np.int64 / np.float64 / np.bool_) are cast to
+    # native Python types so the result is JSON-serializable (the narration
+    # layer and API receive this dict directly).
     drivers.append(DriverContribution(
         driver_name="data_completeness",
         driver_type="uncontrollable",
-        contribution_value=round(curr_completeness, 4),
+        contribution_value=float(round(curr_completeness, 4)),
         contribution_pct=0.0,  # meta-driver, not part of additive decomposition
         direction="decrease" if curr_completeness < 0.9 else "stable",
         analytical_method="data_quality_check",
         detail={
-            "total_records": curr_total,
-            "null_records": curr_nulls,
-            "completeness_pct": round(curr_completeness * 100, 1),
+            "total_records": int(curr_total),
+            "null_records": int(curr_nulls),
+            "completeness_pct": float(round(curr_completeness * 100, 1)),
             "threshold_pct": 90.0,
-            "passes_quality_gate": curr_completeness >= 0.9,
+            "passes_quality_gate": bool(curr_completeness >= 0.9),
         },
         source_table="customer_roster",
         source_column="status",
@@ -570,7 +573,7 @@ def _churn_decomposition(
                         "bucket": row["tenure_bucket"],
                         "total": int(row["total"]),
                         "churned": int(row["churned"]),
-                        "churn_rate": round(row["churn_rate"], 1),
+                        "churn_rate": float(round(row["churn_rate"], 1)),
                     }
                     for _, row in cohort_churn.iterrows()
                 ],
