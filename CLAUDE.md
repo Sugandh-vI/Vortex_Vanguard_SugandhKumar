@@ -492,3 +492,35 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 6 — Access Control (persona → KPI/column permission filter enforced before narration; must block Gross Margin % for Category Manager and log the block)
+
+---
+
+## Iteration Log — Phase 6 (Access Control) — 2026-08-26
+
+### What was done
+- Built `backend/engine/access_control.py` (placeholder → full module):
+  - **`AccessDecision`** dataclass: persona, kpi_name, allowed, action (`allowed`/`blocked`), human-readable reason, ISO-8601 UTC timestamp, `source` (provenance of the rule), `restricted_columns` (stripped columns, empty for current dataset). JSON-serializable.
+  - **`AccessLogStore`** — SQLite audit log at `backend/data/raw/access_log.db` (gitignored via `*.db`). Schema: `id, timestamp, persona, kpi_name, action, allowed, reason, source, restricted_columns` + index on (persona, kpi_name). `fetch(limit, persona, kpi_name, action)` returns newest-first plain dicts for the API/UI. Persists across store instances (verified by reopening the DB).
+  - **`PermissionGuard`** (constructed per persona + request): `check_kpi()` → AccessDecision (logged by default), `allowed_kpis()`, `filter_kpis()` (deduped, denies always logged), `filter_results()` — gates a `ConfidenceResultSet` to the persona's accessible KPIs **before narration** (local import keeps the module dependency-light), and `apply_column_filter()`/`restricted_columns_for()` — optional column-level redaction driven by a per-KPI `column_restrictions` contract block (none declared in the YAML today → no-op, mechanism ready).
+  - **`enforce_access()`** convenience one-shot API.
+  - Zero hardcoded permission lists: everything resolves through `ContractStore.is_accessible()` / `get_kpis_for_persona()` / the contract's `persona_access` (and optional `column_restrictions`). Unknown persona and unknown KPI both **fail closed** (blocked + logged + reason).
+- Verified end-to-end against the synthetic pipeline (detection → decomposition → confidence → guard):
+  - **Event 4 scenario:** Category Manager → `Gross Margin %` returns `allowed=False, action=blocked`, reason names the contract as source (`persona_access lists: CFO`), UTC timestamp captured, one `access_log` row (reopen persistence confirmed). ✅
+  - **CFO** → all 4 KPIs allowed (27/27 results). **Category Manager** → `filter_results(analyze(...))` returns 22/27 results; all 5 Gross Margin % results (4 anomalies + 1 Sports & Outdoors sparse flag) are excluded from the payload and one deduplicated block is logged. ✅
+  - Fail-closed: persona `Hacker` (not in contract) and KPI `Secret KPI` both blocked + logged. ✅
+  - `filter_kpis()` dedupes to 1 block for repeated `Gross Margin %` requests. `apply_column_filter()` no-ops on current contract. All decision/log/payload JSON serialization checks pass; module compiles.
+- Committed to `arena/01a03d54-vortex-vanguard-sugandhkumar` and pushed (branch-only; main untouched).
+
+### Key decisions made
+- **Gate before narration, enforced at the results level:** `filter_results()` strips blocked KPIs from the `ConfidenceResultSet` the LLM payload would be built from — blocked KPI data never reaches the narration layer (explicitly also true for sparse-history flags of blocked KPIs).
+- **Denials are never dropped:** bulk filters dedupe per KPI per call to avoid log flooding, but every denial is persisted — the UI's "blocked" state must always be auditable.
+- **Log DB path** defaults to `backend/data/raw/access_log.db` (overridable in the constructor); no new dependency (stdlib `sqlite3`), and `backend/data/raw/*.db` is already gitignored.
+- **Column-level filtering is contract-driven but currently unused:** the contract has no sensitive columns, so `column_restrictions` is an implemented hook, not a hardcoded denylist; nothing was added to the YAML.
+- **Fail-closed posture:** unknown persona/KPI → block, because the contract is the only source of truth and absence of a rule must not grant access.
+
+### What remains
+- Phase 6 is fully complete per Section 8 (persona → KPI permission filter, GM% blocked for Category Manager, block logged). No open issues.
+- Phase 11 UI will read `access_log` rows (persona/kpi/action/reason/timestamp) to render the blocked state; no UI code yet.
+
+### Next phase (pending confirmation)
+- Phase 7 — Action Recommendation (driver → controllable lever → action → expected impact → owner → confidence → monitoring plan, as a lookup/rules table, not LLM-generated)
