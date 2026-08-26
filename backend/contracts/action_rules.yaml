@@ -1,0 +1,335 @@
+# ============================================================
+# Action Recommendation Rules — BusinessIntelligence.ai
+# ============================================================
+#
+# Phase 7. Deterministic lookup/rules table that maps decomposition
+# drivers (Phase 4) to business levers, actions, owners, expected
+# impact, and monitoring plans. NOT LLM-generated — narration (Phase 8)
+# only renders these already-computed recommendations.
+#
+# Matching: for each DriverContribution, the engine scores candidate
+# rules by specificity (number of specified fields that match:
+# kpi, driver, component, direction, categories). The highest-scoring
+# rule whose gates pass wins; ties break by YAML order. No rule match
+# -> `defaults` (investigate & monitor, non-actionable).
+#
+# Rule fields:
+#   id                required, unique
+#   kpi               KPI name (required — every rule is KPI-scoped)
+#   driver            driver_name from decomposition (required)
+#   component         detail.component (optional = any)
+#   direction         increase | decrease (optional = any)
+#   categories        list of product categories (optional = any);
+#                     only matches when the driver has a category context
+#   gates             optional filters: min_abs_contribution,
+#                     min_contribution_pct
+#   lever             business lever name (required)
+#   owner             accountable role (required)
+#   actions           list of recommended actions (required, non-empty)
+#   expected_impact   optional: recovery {min, max} factors applied to
+#                     |driver contribution|, plus a human note
+#   monitoring        monitoring plan list (optional)
+#   actionable        bool — False = informational only (must not be
+#                     presented as a business recommendation to act on)
+#
+# Placeholders in actions/monitoring text: {category}, {cohort},
+# {cohort_rate} — filled by the engine from the driver detail
+# (never from the LLM).
+# ============================================================
+
+version: 1
+
+# Fallback when no specific rule matches (still gives a traceable,
+# non-actionable recommendation rather than nothing).
+defaults:
+  id: rule_default_investigate
+  lever: "Investigate & Monitor"
+  owner: "Analytics Owner"
+  actions:
+    - "Confirm the movement with source data and the KPI contract formula before acting."
+    - "Re-check the movement in the next refresh cycle; escalate if it persists."
+  expected_impact:
+    note: "No lever rule matched this driver — impact not quantified."
+  monitoring:
+    - "Track the KPI against its contract baseline each refresh cycle."
+  actionable: false
+
+rules:
+  # ----------------------------------------------------------
+  # Revenue — price effect (PVM)
+  # ----------------------------------------------------------
+  - id: revenue_price_cut_impact
+    kpi: Revenue
+    driver: unit_price
+    component: price_effect
+    direction: decrease
+    gates:
+      min_contribution_pct: 5
+    lever: "Pricing & Promotions"
+    owner: "Pricing Lead (CFO)"
+    actions:
+      - "Review the price-cut decision against elasticity data; quantify demand recovery before restoring price."
+      - "Run a controlled price test on the affected category to measure elasticity."
+    expected_impact:
+      recovery: {min: 0.4, max: 0.6}
+      note: "Recoverable revenue via measured price restoration / elasticity-aware repricing."
+    monitoring:
+      - "Daily revenue vs 21-day rolling baseline after any price change."
+      - "Weekly price-elasticity cohort (volume response per % price move)."
+    actionable: true
+
+  - id: revenue_price_increase
+    kpi: Revenue
+    driver: unit_price
+    component: price_effect
+    direction: increase
+    gates:
+      min_contribution_pct: 5
+    lever: "Pricing & Promotions"
+    owner: "Pricing Lead (CFO)"
+    actions:
+      - "Confirm the price increase is holding volume; watch for elasticity backlash."
+      - "Prepare a price-reduction response plan if volume erosion accelerates."
+    expected_impact:
+      recovery: {min: 0.3, max: 0.5}
+      note: "Protectable revenue upside if volume holds post-increase."
+    monitoring:
+      - "Daily units vs baseline alongside price changes."
+      - "Competitor price watch on the affected category."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Revenue — volume effect (PVM) — measured but cause unknown
+  # ----------------------------------------------------------
+  - id: revenue_volume_drop
+    kpi: Revenue
+    driver: units_sold
+    component: volume_effect
+    direction: decrease
+    gates:
+      min_contribution_pct: 5
+    lever: "Demand & Competitive Response"
+    owner: "Category Manager (Commercial)"
+    actions:
+      - "Triage the volume drop: confirm whether a competitor promo, demand shock, or supply/stockout caused it."
+      - "Break down the drop by region and category to localize the cause before acting."
+      - "If competitor-driven, scope a targeted promo response; if demand-driven, review forecast assumptions."
+    expected_impact:
+      recovery: {min: 0.3, max: 0.5}
+      note: "Volume is the quantified-but-unexplained driver — impact assumes the cause is found and addressed."
+    monitoring:
+      - "Daily units by category vs baseline; regional split."
+      - "Competitor activity watch on the affected category."
+    actionable: true
+
+  - id: revenue_volume_gain
+    kpi: Revenue
+    driver: units_sold
+    component: volume_effect
+    direction: increase
+    gates:
+      min_contribution_pct: 5
+    lever: "Demand & Competitive Response"
+    owner: "Category Manager (Commercial)"
+    actions:
+      - "Validate whether the volume gain is sustainable (promo, seasonality, or structural demand)."
+      - "Check stock levels to confirm the surge is fulfillable without service degradation."
+    expected_impact:
+      recovery: {min: 0.2, max: 0.4}
+      note: "Sustained upside if the driver is structural; assumes no pull-forward from promos."
+    monitoring:
+      - "Weekly units vs prior-period trend; promo cannibalization check."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Revenue — mix interaction (informational)
+  # ----------------------------------------------------------
+  - id: revenue_mix_interaction
+    kpi: Revenue
+    driver: product_mix
+    component: mix_interaction
+    lever: "Pricing & Promotions"
+    owner: "Pricing Lead (CFO)"
+    actions:
+      - "Treat the mix term as the interaction between price and volume changes — no standalone lever."
+      - "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+    monitoring:
+      - "Track category mix share vs baseline each week."
+    actionable: false
+
+  # ----------------------------------------------------------
+  # Units Sold — category contribution breakdown
+  # ----------------------------------------------------------
+  - id: units_electronics_decline
+    kpi: Units Sold
+    driver: product_mix
+    categories: [Electronics]
+    gates:
+      min_contribution_pct: 5
+    lever: "Category Demand — Electronics"
+    owner: "Category Manager — Electronics"
+    actions:
+      - "Investigate the {category} volume decline: competitor promo, demand shift, or supply issue."
+      - "Review Electronics pricing/promo plan and channel inventory for stockouts."
+    expected_impact:
+      recovery: {min: 0.3, max: 0.5}
+      note: "Recoverable units assuming the cause is found and addressed."
+    monitoring:
+      - "Daily Electronics units vs baseline; promo calendar review."
+    actionable: true
+
+  - id: units_category_decline
+    kpi: Units Sold
+    driver: product_mix
+    direction: decrease
+    gates:
+      min_contribution_pct: 5
+    lever: "Category Demand"
+    owner: "Category Manager (Commercial)"
+    actions:
+      - "Investigate the {category} volume decline with the category team."
+      - "Check for stockouts, assortment changes, or marketing support gaps in {category}."
+    expected_impact:
+      recovery: {min: 0.3, max: 0.5}
+      note: "Recoverable units assuming the cause is found and addressed."
+    monitoring:
+      - "Weekly category units vs baseline; assortment/promo review."
+    actionable: true
+
+  - id: units_category_gain
+    kpi: Units Sold
+    driver: product_mix
+    direction: increase
+    gates:
+      min_contribution_pct: 5
+    lever: "Category Demand"
+    owner: "Category Manager (Commercial)"
+    actions:
+      - "Validate the {category} volume gain; check promo pull-forward or seasonality."
+      - "Ensure stock and service capacity keep up with the surge."
+    expected_impact:
+      recovery: {min: 0.2, max: 0.4}
+      note: "Sustained upside if structural; assumes no promo pull-forward."
+    monitoring:
+      - "Weekly category units vs baseline; stock coverage check."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Marketing correlation (any KPI) — supporting signal only
+  # ----------------------------------------------------------
+  - id: marketing_correlation_review
+    kpi: Revenue
+    driver: marketing_spend
+    lever: "Marketing Effectiveness"
+    owner: "Marketing Analytics Lead"
+    actions:
+      - "Review marketing attribution for the window; correlation is a supporting signal, not causation."
+      - "Validate spend-vs-demand relationship before changing media mix."
+    monitoring:
+      - "Weekly marketing spend vs KPI correlation; channel-level ROI."
+    actionable: false
+
+  - id: marketing_correlation_review_units
+    kpi: Units Sold
+    driver: marketing_spend
+    lever: "Marketing Effectiveness"
+    owner: "Marketing Analytics Lead"
+    actions:
+      - "Review marketing attribution for the window; correlation is a supporting signal, not causation."
+      - "Validate spend-vs-demand relationship before changing media mix."
+    monitoring:
+      - "Weekly marketing spend vs units correlation; channel-level ROI."
+    actionable: false
+
+  # ----------------------------------------------------------
+  # Gross Margin % — price component
+  # ----------------------------------------------------------
+  - id: margin_price_compression
+    kpi: Gross Margin %
+    driver: unit_price
+    direction: decrease
+    gates:
+      min_contribution_pct: 5
+    lever: "Pricing & Margin Recovery"
+    owner: "Pricing Lead (CFO)"
+    actions:
+      - "Assess gross-margin impact against volume upside; decide between price restoration and cost takeout."
+      - "Model margin-neutral alternatives (bundling, tiered pricing) before restoring price."
+    expected_impact:
+      recovery: {min: 0.5, max: 0.8}
+      note: "Recoverable margin points from price restoration / margin-neutral repricing."
+    monitoring:
+      - "Daily gross margin % vs baseline; price ladder review."
+    actionable: true
+
+  - id: margin_price_expansion
+    kpi: Gross Margin %
+    driver: unit_price
+    direction: increase
+    gates:
+      min_contribution_pct: 5
+    lever: "Pricing & Margin Recovery"
+    owner: "Pricing Lead (CFO)"
+    actions:
+      - "Confirm the margin gain is sustainable; watch competitive response and volume elasticity."
+    expected_impact:
+      recovery: {min: 0.4, max: 0.6}
+      note: "Protectable margin points assuming volume holds."
+    monitoring:
+      - "Daily gross margin % vs baseline; competitor price watch."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Gross Margin % — cost component
+  # ----------------------------------------------------------
+  - id: margin_cost_drift
+    kpi: Gross Margin %
+    driver: unit_cost
+    gates:
+      min_contribution_pct: 5
+    lever: "Supply Chain & Procurement"
+    owner: "Procurement Lead"
+    actions:
+      - "Investigate unit-cost drift (supplier pricing, input costs, or mix effects driving the residual)."
+      - "Renegotiate or dual-source inputs for the highest-impact category."
+    expected_impact:
+      recovery: {min: 0.3, max: 0.5}
+      note: "Recoverable margin points from cost actions; residual includes mix effects."
+    monitoring:
+      - "Weekly unit cost by category vs baseline; supplier price watch."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Customer Churn Rate — data quality (operational recovery)
+  # ----------------------------------------------------------
+  - id: churn_data_quality_recovery
+    kpi: Customer Churn Rate
+    driver: data_completeness
+    lever: "Data Quality & Pipeline"
+    owner: "Data Engineering Lead"
+    actions:
+      - "Fix the customer-roster sync failure; backfill null statuses from the source CRM."
+      - "Add a completeness monitor with an alert at the 90% gate for churn analyses."
+    expected_impact:
+      note: "Not a business impact — unblocks trustworthy churn analysis."
+    monitoring:
+      - "Monthly roster completeness vs 90% gate; sync job health."
+    actionable: true
+
+  # ----------------------------------------------------------
+  # Customer Churn Rate — tenure cohort
+  # ----------------------------------------------------------
+  - id: churn_cohort_retention
+    kpi: Customer Churn Rate
+    driver: customer_tenure
+    lever: "Customer Retention"
+    owner: "Customer Success Lead"
+    actions:
+      - "Launch targeted retention outreach for the {cohort} cohort ({cohort_rate}% churn this month)."
+      - "Probe why {cohort} churns (onboarding, pricing, product gaps) with the CS team."
+    expected_impact:
+      recovery: {min: 0.1, max: 0.3}
+      note: "Reduction in churn rate points if the targeted cohort responds."
+    monitoring:
+      - "Monthly cohort churn rate by tenure bucket; retention campaign response."
+    actionable: true

@@ -524,3 +524,39 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 7 — Action Recommendation (driver → controllable lever → action → expected impact → owner → confidence → monitoring plan, as a lookup/rules table, not LLM-generated)
+
+---
+
+## Iteration Log — Phase 7 (Action Recommendation) — 2026-08-26
+
+### What was done
+- Built the Phase 7 rules table + loader + engine (all deterministic, no LLM):
+  - **`backend/contracts/action_rules.yaml`** (new) — 15 rules + a `defaults` fallback block. Each rule: `id, kpi, driver, component (optional), direction (optional), categories (optional), gates, lever, owner, actions, expected_impact (recovery factors + note), monitoring, actionable`.
+  - **`backend/contracts/action_rules_loader.py`** (new) — `ActionRulesStore` with YAML validation (required fields, unique ids, valid directions, non-empty actions, recovery min/max, defaults block) and `ActionRulesValidationError` / `ActionRuleNotFoundError`.
+  - **`backend/engine/actions.py`** (new) — `ActionRecommendation`, `SuggestionSet`, `ActionPlan` dataclasses (JSON-safe); `match_rule()` specificity scorer; `recommend_anomaly()`, `recommend_all()`, `run_actions()` pipeline (detection → reconciliation → decomposition → confidence → actions).
+- **Matching design (no if/else chains):** for each `DriverContribution`, candidate rules are scored by the number of specified fields that match (`kpi`, `driver`, `component`, `direction`, `categories`); highest score wins, ties break by YAML declaration order, gates (≥5% of the movement) filter before scoring, and no match falls back to `defaults` (investigate & monitor, not actionable). Adding an action = adding a YAML row.
+- **Expected impact is math:** `|driver contribution| × recovery factor range` (per rule), unit from the contract's materiality `impact_unit` (USD / units / percentage_points); correlation & informational drivers get `basis: not_quantified` with a note.
+- **Confidence inherited from Phase 5:** status + score attached per recommendation, plus the driver's attribution weight from `ConfidenceResult.attribution_detail`. Abstained anomalies get `actionable: false` on business levers (with an explicit `abstain_note`); operational recovery (data-quality repair) stays actionable — fixing broken evidence is always safe.
+- **Placeholder rendering** (`{category}`, `{cohort}`, `{cohort_rate}`) is bounded token substitution from pre-computed driver detail (dominant PVM category / highest-churn tenure cohort ≥50 members) — never LLM text.
+- Verified end-to-end (Week 7 Revenue + Gross Margin + Units Sold + June churn):
+  - Revenue May 13: price → `revenue_price_cut_impact` (impact 1212.63–1818.95 USD, conf medium, attribution 1.0); volume → `revenue_volume_drop` (1562.0–2603.34 USD, attribution 0.5, actionable); mix → `revenue_mix_interaction` (not actionable). ✅
+  - Gross Margin May 13: price → `margin_price_compression` (1.49–2.38 percentage_points, conf high, attribution 1.0); cost residual (+0.06pp, 1.9% of movement) → defaults investigate & monitor. ✅
+  - Units May 13: Electronics → `units_electronics_decline` (beats generic `units_category_decline` on the specificity tie-break); Grocery/Apparel → generic decline rule; Home & Kitchen counter-movement → gain rule. ✅
+  - June churn (abstain): data-quality recovery actionable; retention rec rendered with "3-6mo cohort (22.1%)" but flagged actionable=false + abstain note. ✅
+  - Coverage: 24 anomalies → 78 recommendations (51 actionable); only 9 fall to `defaults`, ALL negligible (<5% of movement: 0–4.3%). Unit tests for paths absent from demo data (cost ≥5% → `margin_cost_drift`; marketing correlation rule; defaults fallback) + all loader negatives. JSON-serializable; `py_compile` clean.
+- Found & fixed during testing: loader initially accepted `defaults.actions: []` (rules got the non-empty check, defaults didn't) → now rejected; also normalized all rule gates from mixed abs-unit/abs-$/pp floors to the single uniform `min_contribution_pct: 5`.
+
+### Key decisions made
+- **Gates = "a driver must be ≥5% of the movement to earn a lever-specific recommendation"** — one uniform rule across all KPIs. Below that, the `defaults` investigate-&-monitor fallback (traceable, non-actionable) is the correct output, not a bug (verified: all defaults hits are 0–4.3% share).
+- **Rules table lives in `contracts/`** next to the semantic contract (single source of truth), kept separate from `kpi_contracts.yaml` so contract validation stays focused; loaded by its own validated store.
+- **Specificity tie-break = YAML order** — deterministic and reviewable; the Electronics rule is declared before the generic Units rule so a category-specific recommendation wins for Electronics.
+- **`expected_impact` uses contract materiality units** (`impact_unit`) — "percentage_points" for GM/churn, USD for revenue, units for units — so the UI doesn't need unit mapping.
+- **Cost rule only fires when cost is material (≥5%)**: Week 7 GM's +0.06pp residual is intentionally investigate-&-monitor; a cost-driven margin anomaly (not in this dataset) would get the procurement rule (unit-tested).
+- Access-control filtering of the ActionPlan is deferred to the Phase 12 API layer (Phase 6 already gates at the results level; recommendations carry kpi_name/period so they filter the same way).
+
+### What remains
+- Phase 7 is fully complete per Section 8. No open issues.
+- Phase 8 narration will render `ActionPlan` objects (lever/owner/actions/impact/monitoring/confidence) as persona-specific prose; Phase 12 API will order: access filter → narration.
+
+### Next phase (pending confirmation)
+- Phase 8 — LLM Narration Layer (provider-agnostic `llm_client.py`, Ollama default with mock-mode fallback, system prompt forbidding facts not in the JSON, persona-conditioned CFO vs Category Manager templates)
