@@ -560,3 +560,42 @@ This log is how we track project state across sessions, so keep entries factual 
 
 ### Next phase (pending confirmation)
 - Phase 8 — LLM Narration Layer (provider-agnostic `llm_client.py`, Ollama default with mock-mode fallback, system prompt forbidding facts not in the JSON, persona-conditioned CFO vs Category Manager templates)
+
+---
+
+## Iteration Log — Phase 8 (LLM Narration Layer) — 2026-08-26
+
+### What was done
+- **IMPORTANT (environment):** this agent runs in a cloud sandbox with NO access to the user's local `ollama serve`. All testing below is **mock-mode only**. The real Ollama path (`minimax-m3:cloud`) is implemented but NOT claimed as tested — the user will test it locally and report back before this phase is confirmed.
+- Built `backend/narration/llm_client.py` (placeholder → full module):
+  - `LLMProvider` ABC (provider-agnostic: `complete(prompt) -> LLMResponse`, `is_available()`); any OpenAI-compatible backend fits.
+  - `OllamaProvider` — real backend via `POST /api/chat` at `OLLAMA_BASE_URL` (default `http://localhost:11434`), `OLLAMA_MODEL` (default `minimax-m3:cloud`), temperature 0.2, `num_predict` 1024, 60s timeout; `is_available()` pings `/api/tags` (no tokens generated); raises `ProviderUnavailableError` on failure. **Never invoked in this environment.**
+  - `MockProvider` — deterministic narrator that parses the `{facts}` JSON out of the prompt and builds a placeholder, clearly-labeled `[MOCK]` narrative **solely from those facts** (no arithmetic, no invented facts), persona-differentiated (CFO vs Category Manager templates + a distinct lens close). Usage metadata is labeled `source: mock_estimate`, `mock: true`.
+  - `LLMClient` facade — selection priority: `LLM_MOCK_MODE=true` → mock; Ollama reachable → Ollama; else → mock (auto-fallback). `from_env(persona)`, `describe()` for telemetry/UI, `complete()`.
+- Built `backend/narration/prompts.py`:
+  - **Hybrid system prompt** (intro + "ALLOWED FACT SOURCES" fact bible + 8 strict rules + per-persona addendum): the fact bible names every exact field the model may reference; the rules forbid computing/rounding/estimating/inferring numbers, forbid causal claims not in the JSON, forbid inventing thresholds/targets/owners/actions, require labeling correlation as non-causal, require explicit abstain language when status is abstain, and mandate a **"VERIFICATION PASS"** (re-read output; delete any claim not in the facts JSON).
+  - `pipeline_to_facts(confidence_result, suggestion_set, anomaly, persona)` — the deterministic fact-map builder: flat JSON-safe `facts` with `grounded_assertions` (every number + its `source_path` provenance: e.g. `drivers[0].contribution_value`, `recommendations[0].expected_impact.value_min`). This is the machine-checkable oracle the strictness test asserts against.
+  - `build_prompt(facts, persona)` — no numeric literals appear anywhere except inside the facts JSON slot (verified: instruction portion contains only rule enumeration 1-8 and persona length guidance 2-4/3-5, no metric values).
+  - `narrative_is_grounded(text, facts)` / `extract_numbers` / `allowed_numbers` / `allowed_string_facts` — strictness oracle for mock output.
+- Verified (mock mode, full Phase 5/6/7/8 pipeline):
+  - 3 scenarios × 2 personas (Revenue May 13, Gross Margin % May 13, June churn abstain): all narratives **grounded=True** (zero numbers outside the allowed fact set) and **persona-differentiated** (CFO vs Category Manager text differs; correct lens cue present). ✅
+  - **Auto-fallback proven**: `OllamaProvider.is_available()` → False in this sandbox; `LLMClient.from_env()` with `LLM_MOCK_MODE=false` falls back to mock; `auto_fallback=False` raises `ProviderUnavailableError` cleanly. ✅
+  - Sparse-flag fact path (Sports & Outdoors, no anomaly/no recommendations) works and stays grounded. ✅
+  - **Phase 6 × 8 integration**: Category Manager narratives cover all visible anomalies, every narrative grounded, and **no "Gross Margin" content ever appears** (blocked KPI never reaches the LLM); CFO sees all 27 incl. GM. ✅
+  - Env defaults match `.env.example` (`http://localhost:11434` / `minimax-m3:cloud`); `py_compile` clean across backend.
+- Bugs found & fixed during mock testing: (a) `MockProvider.extract_facts` anchored on the first `{` which matched template braces (`{value_min,...}`) — now anchors on the `FACTS_JSON:` marker with balanced-brace parsing; (b) `_get(d, 'driver_name', 'driver')` passed an extra path key causing empty driver names/values — switched to keyword `default=`; (c) number extractor swallowed trailing punctuation commas and split dates into fragments — tokens now `rstrip(",")` and date/string fragments match against allowed string facts.
+
+### Key decisions made
+- **"The specification is the payload":** the prompt contains no numeric literals outside the injected JSON, so the narrator physically has nothing to compute from; the fact bible + verification pass define the allowed evidence set, and `grounded_assertions` (with source_path provenance) makes the constraint machine-checkable without relying on LLM honesty.
+- **Mock must be a faithful test oracle, not a stub:** it narrates from the same `facts` dict a real model receives, is persona-differentiated, and is always labeled `[MOCK]` / `mock: true` so the UI can never confuse it with real LLM output (also satisfies the brief's LLM-vs-non-LLM visibility requirement).
+- **String facts (confidence.message, abstain reasons, actions, monitoring, lever/owner, period) are part of the allowed evidence:** numbers inside them (e.g. "70.2%", "90%") were computed by deterministic code, so the oracle treats tokens appearing within allowed strings as grounded.
+- **Mock usage tokens are labeled `mock_estimate`** — never presented as real token counts (Phase 10 telemetry will consume Ollama's real `prompt_eval_count`/`eval_count` from response metadata).
+- Real-provider response shape uses Ollama's `/api/chat` fields (`message.content`, `prompt_eval_count`, `eval_count`); OpenAI-compatible providers can be adapted via the same `LLMProvider` interface (swap in `.env` only, per the Phase 0 spec-change decision).
+- Attendance to Section 4's "visible LLM vs non-LLM breakdown": every narrated unit carries `provider` + `mock` flags now; the API/UI wiring for this comes in Phases 10-11.
+
+### What remains
+- **Phase 8 code complete; NOT confirmed** — the real Ollama path (local `ollama serve` + `minimax-m3:cloud`) must be tested by the user locally: `cd backend && python -c "from narration.llm_client import LLMClient; print(LLMClient.from_env('CFO').describe())"` should show `provider=ollama, mock=False`. Pending that report, treat Phase 8 as unverified-and-unlocked.
+- The narration endpoint (FastAPI route wiring fact-map + persona + access filter) is deferred to Phase 12 (API layer already has `/health` only).
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
