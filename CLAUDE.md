@@ -648,3 +648,35 @@ This log is how we track project state across sessions, so keep entries factual 
 ### Next phase (pending confirmation)
 - Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
 
+---
+
+## Iteration Log — Phase 8 Fix (Grounding Validator Number Normalization) — 2026-08-26
+
+### What was done
+- User's second local real-Ollama run showed 5/6 genuine passes and one FALSE FAIL (Run 1: Revenue/CFO, 4 flagged numbers). Audit confirmed **this was a validator normalization bug, not a hallucination** — all four flagged values are the exact Phase 4 numbers: change -7,749.00, price -3,031.58, volume -5,206.68, volume-impact-min 1,562.00.
+- **Mismatch evidence (allowed form vs extracted token):**
+  - `$7,749.00` vs allowed `-7,749` / `-7749.0` — sign carried by the word "decrease"; trailing `.00` padding.
+  - `-$3,031.58` → old regex dropped the sign before the `$`, token became `3,031.58` vs allowed `-3,031.58` / `-3031.58`.
+  - `-$5,206.68` → same sign-placement issue vs allowed `-5,206.68` / `-5206.68`.
+  - `$1,562.00` vs allowed `1,562` / `1562.0` — trailing `.00` padding.
+  - Neighbouring tokens passed only because they happened to match exact allowed strings (`1,212.63`, `2,603.34`, `+$489.25`).
+- Fixes in `narration/prompts.py`:
+  - `_canonical_token()` normalizes currency symbols (`$`, `%`), thousands commas, whitespace, unicode minus, leading `+`, and trailing-zero decimals (`1,562.00` → `1562`); returns (magnitude, signed-form, has_explicit_sign).
+  - `extract_numbers()` regex now captures a sign BEFORE the currency symbol (`-$5,206.68` → `-5,206.68`) and strips surrounding whitespace.
+  - `narrative_is_grounded()` matching order: (1) exact allowed form, (2) fragment of an allowed string fact, (3) canonical magnitude match — with a sign-consistency check when the token itself carries an explicit sign (`+$3,031.58` on a negative fact is still flagged; `"decrease of $7,749.00"` passes because the token is signless and the words carry direction).
+  - New `grounding_detail()` returns the per-token trace (exact / string-fact / normalized / violations); the harness prints how many tokens matched only after normalization.
+- Added committed regression tests `backend/test_grounding_normalization.py` (runnable standalone): currency/padding/sign cases, signless-magnitude acceptance, explicit sign-flip rejection, invented-number rejection, empty/placeholder hard-FAIL, canonical helper, and trace assertions.
+- **Re-verified all 6 real-model narratives** (reconstructed verbatim from the pasted run — deterministic pipeline facts, no Ollama re-call): 6/6 grounded; Run 1's four tokens now match via normalization (10 normalized tokens in Run 1 total), Runs 2-6 unchanged (0-1 normalized). Mock 3x2 scenarios still grounded.
+
+### Key decisions made
+- **Magnitude-first matching with sign-consistency guard:** numbers are grounded by canonical magnitude; an explicitly-signed token must also agree with the fact's sign. This accepts reasonable formatting variants while still catching genuine sign flips and invented magnitudes.
+- Leading `+` is normalized away (a plus is not a semantic distinction), and both the 2dp display form and the raw `str()` form are indexed (values like 0.056 carry >2 decimals).
+- The validator's job stays "catch computed/invented numbers"; direction words ("decrease") are trusted per the prompt's strict rules — note this as a known limitation: sign errors expressed ONLY in words (not on the token) are not machine-checked.
+
+### What remains
+- No LLM re-run required: 6/6 grounding verified from the captured outputs. User may re-run `python test_real_narration.py` if they want the summary to show 6/6 with the new trace line (optional; the previous run's narrative outputs are already all grounded).
+- Phase 8 can now be treated as confirmed (real model: 6/6 non-empty, untruncated, grounded, persona-differentiated) pending the user's acknowledgment.
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+

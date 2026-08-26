@@ -45,7 +45,12 @@ from contracts.loader import ContractStore
 from engine.detection import run_detection
 from engine.confidence import analyze
 from engine.actions import run_actions
-from narration.prompts import pipeline_to_facts, build_prompt, narrative_is_grounded
+from narration.prompts import (
+    pipeline_to_facts,
+    build_prompt,
+    narrative_is_grounded,
+    grounding_detail,
+)
 from narration.llm_client import (
     LLMClient,
     LLMError,
@@ -218,6 +223,15 @@ def run_one(client: LLMClient, ctx: dict, kpi: str, period: str) -> dict:
         print(
             "Ungrounded claims are numbers the narrator computed, rounded, or "
             "invented; they are NOT in the facts JSON the pipeline provided."
+        )
+
+    detail = grounding_detail(resp.text, facts)
+    if detail["normalized"]:
+        print(
+            f"  ({len(detail['normalized'])} numeric token(s) matched after "
+            f"normalization of currency/padding/sign formatting: "
+            f"{detail['normalized'][:10]}"
+            f"{' ...' if len(detail['normalized']) > 10 else ''})"
         )
 
     return {

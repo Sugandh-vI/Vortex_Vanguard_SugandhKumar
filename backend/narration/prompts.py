@@ -273,17 +273,48 @@ def build_prompt(facts: dict, persona: str = "CFO") -> str:
 # ============================================================
 
 
-_NUMBER_RE = re.compile(r"-?\d[\d,]*(?:\.\d+)?")
+_NUMBER_RE = re.compile(r"[-−+]?\s*\$?\s*\d[\d,]*(?:\.\d+)?")
 
 
 def extract_numbers(text: str) -> set[str]:
     """
     All numeric tokens in a narrative (excludes the JSON slot).
 
-    Trailing punctuation commas are trimmed (a comma after a number is
-    a separator, not part of the token).
+    The regex captures an optional sign even when it sits BEFORE the
+    currency symbol (-$5,206.68 and $5,206.68 both yield the digits),
+    and unicode minus. Leading/trailing whitespace and trailing
+    punctuation commas are trimmed.
     """
-    return {tok.rstrip(",") for tok in _NUMBER_RE.findall(text)}
+    return {tok.strip().rstrip(",") for tok in _NUMBER_RE.findall(text)}
+
+
+def _canonical_token(token: str) -> tuple[str, str, bool]:
+    """
+    Normalize a numeric token for grounding comparison.
+
+    Handles reasonable currency/number formatting variants:
+      (a) currency symbols: $57,146.52 / 57,146.52
+      (b) decimal padding: 1,562.00 == 1,562 == 1562.0
+      (c) sign placement:  -$3,031.58 == -3,031.58 == -3031.58
+          unicode minus, thousands commas, '%' suffix, leading '+'
+
+    Returns (magnitude_canonical, signed_canonical, has_explicit_sign).
+    '+' is normalized away from the signed form (a leading + is not a
+    semantic distinction); '-' is preserved for sign-consistency checks.
+    """
+    t = token.strip()
+    t = t.replace("$", "").replace("%", "").replace(" ", "").replace("\u2212", "-")
+    sign = ""
+    if t.startswith(("-", "+")):
+        sign = t[0]
+        t = t[1:]
+    t = t.replace(",", "")
+    if "." in t:
+        t = t.rstrip("0").rstrip(".")
+    if not t:
+        return "", "", bool(sign)
+    signed = t if sign != "-" else "-" + t
+    return t, signed, bool(sign)
 
 
 def allowed_numbers(facts: dict) -> set[str]:
@@ -326,18 +357,49 @@ def allowed_string_facts(facts: dict) -> set[str]:
 MIN_NARRATIVE_WORDS = 10
 
 
+def allowed_magnitudes(facts: dict) -> tuple[set[str], set[str]]:
+    """
+    Canonical magnitude + signed forms of the numeric grounded
+    assertions. Comparison happens AFTER normalization (currency,
+    commas, padding), so "$7,749.00" and "-7749.0" both resolve to
+    magnitude "7749" — the model is not forced to match our internal
+    string format exactly.
+    """
+    magnitudes: set[str] = set()
+    signed: set[str] = set()
+    for a in facts.get("grounded_assertions", []):
+        v = a["value"]
+        if isinstance(v, bool) or v is None:
+            continue
+        if isinstance(v, (int, float)):
+            # Both the 2dp display form and the raw str() form (values may
+            # carry >2 decimals e.g. 0.056). Sign is preserved so an
+            # explicit opposite sign in the narrative is still catchable.
+            for form in (f"{float(v):,.2f}", str(float(v))):
+                mag, sig, _ = _canonical_token(form)
+                if mag:
+                    magnitudes.add(mag)
+                    signed.add(sig)
+    return magnitudes, signed
+
+
 def narrative_is_grounded(text: str, facts: dict) -> tuple[bool, list[str]]:
     """
     Strictness check: every numeric token in `text` must be grounded in
-    the fact set (either an exact allowed number, or a fragment of an
-    allowed string fact such as the period). Returns (ok, violations).
+    the fact set — either an exact allowed form, a fragment of an allowed
+    string fact (dates/messages/actions), or a canonical match after
+    normalizing currency symbols, thousands separators, decimal padding
+    and sign placement. Returns (ok, violations).
 
     An empty or near-empty narrative is a HARD FAIL: an empty string has
     no numbers, so it would otherwise "pass" while hiding a real LLM
     failure (empty completion / truncation / reasoning-only output).
 
-    Used to be *sure* mock output is grounded; in production this is the
-    test harness for the prompt contract the real LLM is asked to follow.
+    Sign handling: a token that itself carries an explicit sign
+    ("+489.25", "-$5,206.68") must be sign-consistent with the fact
+    (checking the signed canonical form). A signless magnitude is
+    accepted via magnitude match — direction is carried by context
+    words ("a decrease of $7,749.00"), which the prompt constrains.
     """
     word_count = len(str(text).split())
     if word_count < MIN_NARRATIVE_WORDS:
@@ -347,12 +409,49 @@ def narrative_is_grounded(text: str, facts: dict) -> tuple[bool, list[str]]:
 
     allowed = allowed_numbers(facts)
     strings = allowed_string_facts(facts)
+    magnitudes, signed = allowed_magnitudes(facts)
     violations = []
     for tok in extract_numbers(text):
         tok = tok.rstrip(",")
+        # 1) exact formatted form in the allowed set
         if tok in allowed:
             continue
+        # 2) fragment of an allowed string fact (period, message, actions)
         if any(tok in s for s in strings):
             continue
+        # 3) canonical match after normalizing currency/padding/sign
+        mag, sig, has_sign = _canonical_token(tok)
+        if mag and mag in magnitudes:
+            # sign-consistent only if the token itself states a sign;
+            # signless magnitudes are fine (words carry direction).
+            if not has_sign or sig in signed:
+                continue
         violations.append(tok)
     return (len(violations) == 0, violations)
+
+
+def grounding_detail(text: str, facts: dict) -> dict:
+    """
+    Per-token trace of the grounding check (for the harness/UI).
+    Returns {tokens: [...], exact: [...], string_fact: [...],
+             normalized: [...], violations: [...]}.
+    """
+    allowed = allowed_numbers(facts)
+    strings = allowed_string_facts(facts)
+    magnitudes, signed = allowed_magnitudes(facts)
+    result = {"tokens": [], "exact": [], "string_fact": [], "normalized": [], "violations": []}
+    for tok in extract_numbers(text):
+        tok = tok.rstrip(",")
+        result["tokens"].append(tok)
+        if tok in allowed:
+            result["exact"].append(tok)
+            continue
+        if any(tok in s for s in strings):
+            result["string_fact"].append(tok)
+            continue
+        mag, sig, has_sign = _canonical_token(tok)
+        if mag and mag in magnitudes and (not has_sign or sig in signed):
+            result["normalized"].append(tok)
+            continue
+        result["violations"].append(tok)
+    return result
