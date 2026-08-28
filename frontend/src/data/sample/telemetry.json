@@ -1,0 +1,1169 @@
+{
+  "generated_at": "2026-08-28T18:05:47.998823+00:00",
+  "collector_created_at": "2026-08-28T18:05:47.318971+00:00",
+  "stages": {
+    "detection": {
+      "count": 1,
+      "total_ms": 36.1,
+      "avg_ms": 36.1,
+      "min_ms": 36.1,
+      "max_ms": 36.1
+    },
+    "reconciliation": {
+      "count": 1,
+      "total_ms": 20.1,
+      "avg_ms": 20.1,
+      "min_ms": 20.1,
+      "max_ms": 20.1
+    },
+    "decomposition": {
+      "count": 1,
+      "total_ms": 555.1,
+      "avg_ms": 555.1,
+      "min_ms": 555.1,
+      "max_ms": 555.1
+    },
+    "confidence": {
+      "count": 1,
+      "total_ms": 0.7,
+      "avg_ms": 0.7,
+      "min_ms": 0.7,
+      "max_ms": 0.7
+    },
+    "actions": {
+      "count": 1,
+      "total_ms": 18.6,
+      "avg_ms": 18.6,
+      "min_ms": 18.6,
+      "max_ms": 18.6
+    }
+  },
+  "last_pipeline": {
+    "ts": "2026-08-28T18:05:47.954304+00:00",
+    "total_ms": 630.6,
+    "stages": {
+      "detection": 36.1,
+      "reconciliation": 20.1,
+      "decomposition": 555.1,
+      "confidence": 0.7,
+      "actions": 18.6
+    }
+  },
+  "llm": {
+    "calls": 49,
+    "real_calls": 0,
+    "mock_calls": 49,
+    "total_latency_ms": 2.4,
+    "avg_latency_ms": 0.0,
+    "min_latency_ms": 0.0,
+    "max_latency_ms": 0.1,
+    "tokens": {
+      "prompt": 0,
+      "completion": 0,
+      "total": 0
+    },
+    "mock_tokens": {
+      "prompt": 144789,
+      "completion": 5145,
+      "total": 149950
+    },
+    "estimated_cost_usd": 0.0,
+    "grounding": {
+      "checked": 49,
+      "passed": 49,
+      "failed": 0,
+      "violations": 0
+    },
+    "truncated": 0,
+    "usage_sources": [
+      "mock_estimate"
+    ],
+    "by_persona": {
+      "CFO": {
+        "calls": 27,
+        "real_tokens": 0,
+        "total_latency_ms": 0.7,
+        "avg_latency_ms": 0.0
+      },
+      "Category Manager": {
+        "calls": 22,
+        "real_tokens": 0,
+        "total_latency_ms": 1.7,
+        "avg_latency_ms": 0.1
+      }
+    },
+    "by_model": {
+      "mock-llm": {
+        "calls": 49,
+        "real_tokens": 0
+      }
+    }
+  },
+  "cost_at_scale": {
+    "input_rate_per_1m_usd": 0.0,
+    "output_rate_per_1m_usd": 0.0,
+    "pricing": "free_tier",
+    "projected_cost_usd_at_1000_calls": null
+  },
+  "events": [
+    {
+      "ts": "2026-08-28T18:05:47.359751+00:00",
+      "type": "stage",
+      "name": "detection",
+      "latency_ms": 36.1
+    },
+    {
+      "ts": "2026-08-28T18:05:47.379845+00:00",
+      "type": "stage",
+      "name": "reconciliation",
+      "latency_ms": 20.1
+    },
+    {
+      "ts": "2026-08-28T18:05:47.935011+00:00",
+      "type": "stage",
+      "name": "decomposition",
+      "latency_ms": 555.1
+    },
+    {
+      "ts": "2026-08-28T18:05:47.935714+00:00",
+      "type": "stage",
+      "name": "confidence",
+      "latency_ms": 0.7
+    },
+    {
+      "ts": "2026-08-28T18:05:47.954285+00:00",
+      "type": "stage",
+      "name": "actions",
+      "latency_ms": 18.6
+    },
+    {
+      "ts": "2026-08-28T18:05:47.969688+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 2359,
+        "completion": 101,
+        "total": 2461
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9438
+    },
+    {
+      "ts": "2026-08-28T18:05:47.970114+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3149,
+        "completion": 109,
+        "total": 3258
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12597
+    },
+    {
+      "ts": "2026-08-28T18:05:47.970486+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3150,
+        "completion": 110,
+        "total": 3260
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12601
+    },
+    {
+      "ts": "2026-08-28T18:05:47.970842+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3149,
+        "completion": 110,
+        "total": 3259
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12597
+    },
+    {
+      "ts": "2026-08-28T18:05:47.971157+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2439,
+        "completion": 101,
+        "total": 2541
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9758
+    },
+    {
+      "ts": "2026-08-28T18:05:47.971502+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3149,
+        "completion": 109,
+        "total": 3259
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12599
+    },
+    {
+      "ts": "2026-08-28T18:05:47.971827+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2824,
+        "completion": 95,
+        "total": 2920
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11298
+    },
+    {
+      "ts": "2026-08-28T18:05:47.972360+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 4028,
+        "completion": 115,
+        "total": 4144
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 16114
+    },
+    {
+      "ts": "2026-08-28T18:05:47.972641+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2405,
+        "completion": 96,
+        "total": 2502
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9621
+    },
+    {
+      "ts": "2026-08-28T18:05:47.973021+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3402,
+        "completion": 110,
+        "total": 3512
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13611
+    },
+    {
+      "ts": "2026-08-28T18:05:47.973308+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2360,
+        "completion": 102,
+        "total": 2462
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9440
+    },
+    {
+      "ts": "2026-08-28T18:05:47.973832+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 4027,
+        "completion": 114,
+        "total": 4141
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 16108
+    },
+    {
+      "ts": "2026-08-28T18:05:47.974240+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3498,
+        "completion": 106,
+        "total": 3604
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13995
+    },
+    {
+      "ts": "2026-08-28T18:05:47.974615+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3401,
+        "completion": 109,
+        "total": 3510
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13605
+    },
+    {
+      "ts": "2026-08-28T18:05:47.974934+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2850,
+        "completion": 107,
+        "total": 2957
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11402
+    },
+    {
+      "ts": "2026-08-28T18:05:47.975263+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2825,
+        "completion": 95,
+        "total": 2920
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11300
+    },
+    {
+      "ts": "2026-08-28T18:05:47.975532+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2395,
+        "completion": 96,
+        "total": 2491
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9582
+    },
+    {
+      "ts": "2026-08-28T18:05:47.975805+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2359,
+        "completion": 101,
+        "total": 2460
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9436
+    },
+    {
+      "ts": "2026-08-28T18:05:47.976158+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2826,
+        "completion": 95,
+        "total": 2921
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11304
+    },
+    {
+      "ts": "2026-08-28T18:05:47.976545+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3493,
+        "completion": 111,
+        "total": 3604
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13975
+    },
+    {
+      "ts": "2026-08-28T18:05:47.976925+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3493,
+        "completion": 110,
+        "total": 3603
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13973
+    },
+    {
+      "ts": "2026-08-28T18:05:47.977313+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3494,
+        "completion": 111,
+        "total": 3605
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13979
+    },
+    {
+      "ts": "2026-08-28T18:05:47.977681+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3497,
+        "completion": 111,
+        "total": 3609
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13991
+    },
+    {
+      "ts": "2026-08-28T18:05:47.978061+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 3577,
+        "completion": 124,
+        "total": 3701
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14308
+    },
+    {
+      "ts": "2026-08-28T18:05:47.978201+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 1109,
+        "completion": 73,
+        "total": 1182
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 4437
+    },
+    {
+      "ts": "2026-08-28T18:05:47.978312+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 1110,
+        "completion": 73,
+        "total": 1184
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 4443
+    },
+    {
+      "ts": "2026-08-28T18:05:47.978418+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "CFO",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 1112,
+        "completion": 74,
+        "total": 1187
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 4451
+    },
+    {
+      "ts": "2026-08-28T18:05:47.990136+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3170,
+        "completion": 113,
+        "total": 3283
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12680
+    },
+    {
+      "ts": "2026-08-28T18:05:47.990574+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3171,
+        "completion": 114,
+        "total": 3285
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12684
+    },
+    {
+      "ts": "2026-08-28T18:05:47.990978+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3170,
+        "completion": 114,
+        "total": 3284
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12680
+    },
+    {
+      "ts": "2026-08-28T18:05:47.991422+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3170,
+        "completion": 113,
+        "total": 3284
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 12682
+    },
+    {
+      "ts": "2026-08-28T18:05:47.991806+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 2845,
+        "completion": 99,
+        "total": 2944
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11381
+    },
+    {
+      "ts": "2026-08-28T18:05:47.992393+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 4049,
+        "completion": 119,
+        "total": 4169
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 16197
+    },
+    {
+      "ts": "2026-08-28T18:05:47.992724+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2426,
+        "completion": 100,
+        "total": 2526
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9704
+    },
+    {
+      "ts": "2026-08-28T18:05:47.993198+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3423,
+        "completion": 114,
+        "total": 3537
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13694
+    },
+    {
+      "ts": "2026-08-28T18:05:47.993719+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 4047,
+        "completion": 118,
+        "total": 4166
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 16191
+    },
+    {
+      "ts": "2026-08-28T18:05:47.994183+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3519,
+        "completion": 110,
+        "total": 3629
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14078
+    },
+    {
+      "ts": "2026-08-28T18:05:47.994625+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3422,
+        "completion": 113,
+        "total": 3535
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 13688
+    },
+    {
+      "ts": "2026-08-28T18:05:47.994998+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 2871,
+        "completion": 111,
+        "total": 2982
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11485
+    },
+    {
+      "ts": "2026-08-28T18:05:47.995377+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2845,
+        "completion": 99,
+        "total": 2945
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11383
+    },
+    {
+      "ts": "2026-08-28T18:05:47.995785+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 2416,
+        "completion": 100,
+        "total": 2516
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 9665
+    },
+    {
+      "ts": "2026-08-28T18:05:47.996229+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 2846,
+        "completion": 99,
+        "total": 2946
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 11387
+    },
+    {
+      "ts": "2026-08-28T18:05:47.996672+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3514,
+        "completion": 115,
+        "total": 3629
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14058
+    },
+    {
+      "ts": "2026-08-28T18:05:47.997138+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3514,
+        "completion": 114,
+        "total": 3628
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14056
+    },
+    {
+      "ts": "2026-08-28T18:05:47.997585+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3515,
+        "completion": 115,
+        "total": 3630
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14062
+    },
+    {
+      "ts": "2026-08-28T18:05:47.998036+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3518,
+        "completion": 115,
+        "total": 3634
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14074
+    },
+    {
+      "ts": "2026-08-28T18:05:47.998496+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.1,
+      "tokens": {
+        "prompt": 3597,
+        "completion": 128,
+        "total": 3725
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 14391
+    },
+    {
+      "ts": "2026-08-28T18:05:47.998637+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 1130,
+        "completion": 77,
+        "total": 1207
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 4520
+    },
+    {
+      "ts": "2026-08-28T18:05:47.998774+00:00",
+      "type": "llm",
+      "provider": "mock",
+      "model": "mock-llm",
+      "persona": "Category Manager",
+      "mock": true,
+      "latency_ms": 0.0,
+      "tokens": {
+        "prompt": 1131,
+        "completion": 77,
+        "total": 1209
+      },
+      "usage_source": "mock_estimate",
+      "estimated_cost_usd": 0.0,
+      "grounded": true,
+      "violations": [],
+      "truncated": false,
+      "done_reason": null,
+      "prompt_chars": 4526
+    }
+  ]
+}

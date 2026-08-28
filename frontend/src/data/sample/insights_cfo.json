@@ -1,0 +1,3833 @@
+{
+  "persona": "CFO",
+  "sample": true,
+  "insights": [
+    {
+      "insight_id": "Gross Margin %|2024-05-13",
+      "rank": 1,
+      "kpi_name": "Gross Margin %",
+      "period": "2024-05-13",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 37.53,
+        "current_value": 34.62,
+        "absolute_change": -2.92,
+        "pct_change": -7.78,
+        "z_score": -16.1,
+        "direction": "decrease",
+        "data_points_used": 42,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "high",
+        "score": 100.0,
+        "business_explained_pct": 100.0,
+        "arithmetic_explained_pct": 99.9,
+        "data_staleness_hours": 0.0,
+        "history_points": 42,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (42 days).",
+        "reasons": [
+          "Business-explained 100.0% of the movement (arithmetic: 99.9%)",
+          "Data staleness: 0h",
+          "History depth: 42 days of baseline"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2.973,
+          "contribution_pct": 101.9,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "unit_cost",
+          "contribution_value": 0.056,
+          "contribution_pct": 1.9,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Margin Recovery",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Assess gross-margin impact against volume upside; decide between price restoration and cost takeout.",
+            "Model margin-neutral alternatives (bundling, tiered pricing) before restoring price."
+          ],
+          "expected_impact": {
+            "value_min": 1.49,
+            "value_max": 2.38,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable margin points from price restoration / margin-neutral repricing."
+          },
+          "monitoring_plan": [
+            "Daily gross margin % vs baseline; price ladder review."
+          ],
+          "actionable": true,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#margin_price_compression"
+        },
+        {
+          "driver_name": "unit_cost",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#defaults"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Gross Margin % (2024-05-13): moved decrease from 37.53 to 34.62 (change -2.92, -7.78%).\nDrivers: unit_price -2.97, unit_cost 0.06. Model explains 100% of the movement. Confidence: High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (42 days).\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2359,
+          "completion_tokens": 101,
+          "total_tokens": 2461,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-05-13",
+      "rank": 2,
+      "kpi_name": "Revenue",
+      "period": "2024-05-13",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 57146.52,
+        "current_value": 49397.52,
+        "absolute_change": -7749.0,
+        "pct_change": -13.56,
+        "z_score": -3.53,
+        "direction": "decrease",
+        "data_points_used": 42,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 72.7,
+        "business_explained_pct": 72.7,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 42,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 72.7% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 72.7% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 42 days of baseline",
+          "Not below high: business-explained 72.7% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -3031.58,
+          "contribution_pct": 39.1,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": -5206.68,
+          "contribution_pct": 67.2,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 489.25,
+          "contribution_pct": 6.3,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Review the price-cut decision against elasticity data; quantify demand recovery before restoring price.",
+            "Run a controlled price test on the affected category to measure elasticity."
+          ],
+          "expected_impact": {
+            "value_min": 1212.63,
+            "value_max": 1818.95,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable revenue via measured price restoration / elasticity-aware repricing."
+          },
+          "monitoring_plan": [
+            "Daily revenue vs 21-day rolling baseline after any price change.",
+            "Weekly price-elasticity cohort (volume response per % price move)."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_price_cut_impact"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Triage the volume drop: confirm whether a competitor promo, demand shock, or supply/stockout caused it.",
+            "Break down the drop by region and category to localize the cause before acting.",
+            "If competitor-driven, scope a targeted promo response; if demand-driven, review forecast assumptions."
+          ],
+          "expected_impact": {
+            "value_min": 1562.0,
+            "value_max": 2603.34,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Volume is the quantified-but-unexplained driver \u2014 impact assumes the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily units by category vs baseline; regional split.",
+            "Competitor activity watch on the affected category."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_volume_drop"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-05-13): moved decrease from 57,146.52 to 49,397.52 (change -7,749, -13.56%).\nDrivers: unit_price -3,031.58, units_sold -5,206.68, product_mix 489.25. Model explains 72.7% of the movement. Confidence: Medium confidence \u2014 72.7% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3149,
+          "completion_tokens": 109,
+          "total_tokens": 3258,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-05-14",
+      "rank": 3,
+      "kpi_name": "Revenue",
+      "period": "2024-05-14",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 56699.19,
+        "current_value": 49875.51,
+        "absolute_change": -6823.68,
+        "pct_change": -12.03,
+        "z_score": -2.49,
+        "direction": "decrease",
+        "data_points_used": 43,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 73.2,
+        "business_explained_pct": 73.2,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 43,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 73.2% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 73.2% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 43 days of baseline",
+          "Not below high: business-explained 73.2% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2785.39,
+          "contribution_pct": 40.8,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": -4419.29,
+          "contribution_pct": 64.8,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 380.99,
+          "contribution_pct": 5.6,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Review the price-cut decision against elasticity data; quantify demand recovery before restoring price.",
+            "Run a controlled price test on the affected category to measure elasticity."
+          ],
+          "expected_impact": {
+            "value_min": 1114.16,
+            "value_max": 1671.23,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable revenue via measured price restoration / elasticity-aware repricing."
+          },
+          "monitoring_plan": [
+            "Daily revenue vs 21-day rolling baseline after any price change.",
+            "Weekly price-elasticity cohort (volume response per % price move)."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_price_cut_impact"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Triage the volume drop: confirm whether a competitor promo, demand shock, or supply/stockout caused it.",
+            "Break down the drop by region and category to localize the cause before acting.",
+            "If competitor-driven, scope a targeted promo response; if demand-driven, review forecast assumptions."
+          ],
+          "expected_impact": {
+            "value_min": 1325.79,
+            "value_max": 2209.64,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Volume is the quantified-but-unexplained driver \u2014 impact assumes the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily units by category vs baseline; regional split.",
+            "Competitor activity watch on the affected category."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_volume_drop"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-05-14): moved decrease from 56,699.19 to 49,875.51 (change -6,823.68, -12.03%).\nDrivers: unit_price -2,785.39, units_sold -4,419.29, product_mix 380.99. Model explains 73.2% of the movement. Confidence: Medium confidence \u2014 73.2% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3150,
+          "completion_tokens": 110,
+          "total_tokens": 3260,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-05-18",
+      "rank": 4,
+      "kpi_name": "Revenue",
+      "period": "2024-05-18",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 55112.93,
+        "current_value": 47278.11,
+        "absolute_change": -7834.82,
+        "pct_change": -14.22,
+        "z_score": -2.08,
+        "direction": "decrease",
+        "data_points_used": 47,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 68.2,
+        "business_explained_pct": 68.2,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 47,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 68.2% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 68.2% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 47 days of baseline",
+          "Not below high: business-explained 68.2% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2352.66,
+          "contribution_pct": 30.0,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": -5980.98,
+          "contribution_pct": 76.3,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 498.82,
+          "contribution_pct": 6.4,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Review the price-cut decision against elasticity data; quantify demand recovery before restoring price.",
+            "Run a controlled price test on the affected category to measure elasticity."
+          ],
+          "expected_impact": {
+            "value_min": 941.06,
+            "value_max": 1411.6,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable revenue via measured price restoration / elasticity-aware repricing."
+          },
+          "monitoring_plan": [
+            "Daily revenue vs 21-day rolling baseline after any price change.",
+            "Weekly price-elasticity cohort (volume response per % price move)."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_price_cut_impact"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Triage the volume drop: confirm whether a competitor promo, demand shock, or supply/stockout caused it.",
+            "Break down the drop by region and category to localize the cause before acting.",
+            "If competitor-driven, scope a targeted promo response; if demand-driven, review forecast assumptions."
+          ],
+          "expected_impact": {
+            "value_min": 1794.29,
+            "value_max": 2990.49,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Volume is the quantified-but-unexplained driver \u2014 impact assumes the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily units by category vs baseline; regional split.",
+            "Competitor activity watch on the affected category."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_volume_drop"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-05-18): moved decrease from 55,112.93 to 47,278.11 (change -7,834.82, -14.22%).\nDrivers: unit_price -2,352.66, units_sold -5,980.98, product_mix 498.82. Model explains 68.2% of the movement. Confidence: Medium confidence \u2014 68.2% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3149,
+          "completion_tokens": 110,
+          "total_tokens": 3259,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Gross Margin %|2024-05-14",
+      "rank": 5,
+      "kpi_name": "Gross Margin %",
+      "period": "2024-05-14",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 37.4,
+        "current_value": 34.77,
+        "absolute_change": -2.63,
+        "pct_change": -7.03,
+        "z_score": -3.97,
+        "direction": "decrease",
+        "data_points_used": 43,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "high",
+        "score": 100.0,
+        "business_explained_pct": 100.0,
+        "arithmetic_explained_pct": 100.6,
+        "data_staleness_hours": 0.0,
+        "history_points": 43,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (43 days).",
+        "reasons": [
+          "Business-explained 100.0% of the movement (arithmetic: 100.6%)",
+          "Data staleness: 0h",
+          "History depth: 43 days of baseline"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2.866,
+          "contribution_pct": 108.4,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "unit_cost",
+          "contribution_value": 0.221,
+          "contribution_pct": 8.4,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Margin Recovery",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Assess gross-margin impact against volume upside; decide between price restoration and cost takeout.",
+            "Model margin-neutral alternatives (bundling, tiered pricing) before restoring price."
+          ],
+          "expected_impact": {
+            "value_min": 1.43,
+            "value_max": 2.29,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable margin points from price restoration / margin-neutral repricing."
+          },
+          "monitoring_plan": [
+            "Daily gross margin % vs baseline; price ladder review."
+          ],
+          "actionable": true,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#margin_price_compression"
+        },
+        {
+          "driver_name": "unit_cost",
+          "lever": "Supply Chain & Procurement",
+          "owner": "Procurement Lead",
+          "actions": [
+            "Investigate unit-cost drift (supplier pricing, input costs, or mix effects driving the residual).",
+            "Renegotiate or dual-source inputs for the highest-impact category."
+          ],
+          "expected_impact": {
+            "value_min": 0.07,
+            "value_max": 0.11,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable margin points from cost actions; residual includes mix effects."
+          },
+          "monitoring_plan": [
+            "Weekly unit cost by category vs baseline; supplier price watch."
+          ],
+          "actionable": true,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#margin_cost_drift"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Gross Margin % (2024-05-14): moved decrease from 37.4 to 34.77 (change -2.63, -7.03%).\nDrivers: unit_price -2.87, unit_cost 0.22. Model explains 100% of the movement. Confidence: High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (43 days).\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2439,
+          "completion_tokens": 101,
+          "total_tokens": 2541,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-05-15",
+      "rank": 6,
+      "kpi_name": "Revenue",
+      "period": "2024-05-15",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 56346.67,
+        "current_value": 49400.5,
+        "absolute_change": -6946.17,
+        "pct_change": -12.33,
+        "z_score": -2.23,
+        "direction": "decrease",
+        "data_points_used": 44,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 72.9,
+        "business_explained_pct": 72.9,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 44,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 72.9% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 72.9% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 44 days of baseline",
+          "Not below high: business-explained 72.9% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2710.22,
+          "contribution_pct": 39.0,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": -4701.73,
+          "contribution_pct": 67.7,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 465.78,
+          "contribution_pct": 6.7,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Review the price-cut decision against elasticity data; quantify demand recovery before restoring price.",
+            "Run a controlled price test on the affected category to measure elasticity."
+          ],
+          "expected_impact": {
+            "value_min": 1084.09,
+            "value_max": 1626.13,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable revenue via measured price restoration / elasticity-aware repricing."
+          },
+          "monitoring_plan": [
+            "Daily revenue vs 21-day rolling baseline after any price change.",
+            "Weekly price-elasticity cohort (volume response per % price move)."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_price_cut_impact"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Triage the volume drop: confirm whether a competitor promo, demand shock, or supply/stockout caused it.",
+            "Break down the drop by region and category to localize the cause before acting.",
+            "If competitor-driven, scope a targeted promo response; if demand-driven, review forecast assumptions."
+          ],
+          "expected_impact": {
+            "value_min": 1410.52,
+            "value_max": 2350.86,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Volume is the quantified-but-unexplained driver \u2014 impact assumes the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily units by category vs baseline; regional split.",
+            "Competitor activity watch on the affected category."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_volume_drop"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-05-15): moved decrease from 56,346.67 to 49,400.5 (change -6,946.17, -12.33%).\nDrivers: unit_price -2,710.22, units_sold -4,701.73, product_mix 465.78. Model explains 72.9% of the movement. Confidence: Medium confidence \u2014 72.9% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3149,
+          "completion_tokens": 109,
+          "total_tokens": 3259,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-06-21",
+      "rank": 7,
+      "kpi_name": "Revenue",
+      "period": "2024-06-21",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 58582.45,
+        "current_value": 63458.65,
+        "absolute_change": 4876.2,
+        "pct_change": 8.32,
+        "z_score": 2.75,
+        "direction": "increase",
+        "data_points_used": 81,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "low",
+        "score": 49.2,
+        "business_explained_pct": 49.2,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 81,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Low confidence \u2014 only 49.2% of the movement is business-explained.",
+        "reasons": [
+          "Business-explained 49.2% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 81 days of baseline",
+          "Not below high: business-explained 49.2% < 80%; below medium: business-explained 49.2% < 50%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -79.99,
+          "contribution_pct": 1.6,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": 4961.38,
+          "contribution_pct": 101.7,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -5.19,
+          "contribution_pct": 0.1,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#defaults"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate whether the volume gain is sustainable (promo, seasonality, or structural demand).",
+            "Check stock levels to confirm the surge is fulfillable without service degradation."
+          ],
+          "expected_impact": {
+            "value_min": 992.28,
+            "value_max": 1984.55,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if the driver is structural; assumes no pull-forward from promos."
+          },
+          "monitoring_plan": [
+            "Weekly units vs prior-period trend; promo cannibalization check."
+          ],
+          "actionable": true,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_volume_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-06-21): moved increase from 58,582.45 to 63,458.65 (change 4,876.2, 8.32%).\nDrivers: unit_price -79.99, units_sold 4,961.38, product_mix -5.19. Model explains 49.2% of the movement. Confidence: Low confidence \u2014 only 49.2% of the movement is business-explained.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2824,
+          "completion_tokens": 95,
+          "total_tokens": 2920,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-06-22",
+      "rank": 8,
+      "kpi_name": "Units Sold",
+      "period": "2024-06-22",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1253.43,
+        "current_value": 1353,
+        "absolute_change": 99.57,
+        "pct_change": 7.94,
+        "z_score": 2.57,
+        "direction": "increase",
+        "data_points_used": 82,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 82,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 82 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 53.43,
+          "contribution_pct": 53.7,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 53.24,
+          "contribution_pct": 53.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 23.71,
+          "contribution_pct": 23.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -16.14,
+          "contribution_pct": 16.2,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -14.67,
+          "contribution_pct": 14.7,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Sports & Outdoors volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 10.69,
+            "value_max": 21.37,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 10.65,
+            "value_max": 21.3,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 4.74,
+            "value_max": 9.48,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 4.84,
+            "value_max": 8.07,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 4.4,
+            "value_max": 7.33,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-06-22): moved increase from 1,253.43 to 1,353 (change 99.57, 7.94%).\nDrivers: product_mix 53.43, product_mix 53.24, product_mix 23.71, product_mix -16.14, product_mix -14.67. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 4028,
+          "completion_tokens": 115,
+          "total_tokens": 4144,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Customer Churn Rate|2024-06",
+      "rank": 9,
+      "kpi_name": "Customer Churn Rate",
+      "period": "2024-06",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 9.73,
+        "current_value": 17.06,
+        "absolute_change": 7.33,
+        "pct_change": 7.33,
+        "z_score": 2.69,
+        "direction": "increase",
+        "data_points_used": 2,
+        "data_completeness": 0.7017
+      },
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": 0.0,
+        "arithmetic_explained_pct": 0.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 2,
+        "history_unit": "months",
+        "history_required": 3,
+        "data_completeness": 0.7017,
+        "message": "Abstained: Data completeness 70.2% is below the 90% required \u2014 the movement cannot be trusted.",
+        "reasons": [
+          "Data completeness 70.2% is below the 90% required \u2014 the movement cannot be trusted."
+        ],
+        "abstain_reasons": [
+          "data_completeness_below_threshold"
+        ]
+      },
+      "drivers": [
+        {
+          "driver_name": "data_completeness",
+          "contribution_value": 0.7017,
+          "contribution_pct": 0.0,
+          "analytical_method": "data_quality_check",
+          "attribution_weight": 0.0
+        },
+        {
+          "driver_name": "customer_tenure",
+          "contribution_value": 0.0,
+          "contribution_pct": 0.0,
+          "analytical_method": "cohort_analysis",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "data_completeness",
+          "lever": "Data Quality & Pipeline",
+          "owner": "Data Engineering Lead",
+          "actions": [
+            "Fix the customer-roster sync failure; backfill null statuses from the source CRM.",
+            "Add a completeness monitor with an alert at the 90% gate for churn analyses."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "Not a business impact \u2014 unblocks trustworthy churn analysis."
+          },
+          "monitoring_plan": [
+            "Monthly roster completeness vs 90% gate; sync job health."
+          ],
+          "actionable": true,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#churn_data_quality_recovery"
+        },
+        {
+          "driver_name": "customer_tenure",
+          "lever": "Customer Retention",
+          "owner": "Customer Success Lead",
+          "actions": [
+            "Launch targeted retention outreach for the 3-6mo cohort (22.1% churn this month).",
+            "Probe why 3-6mo churns (onboarding, pricing, product gaps) with the CS team."
+          ],
+          "expected_impact": {
+            "value_min": 0.0,
+            "value_max": 0.0,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Reduction in churn rate points if the targeted cohort responds."
+          },
+          "monitoring_plan": [
+            "Monthly cohort churn rate by tenure bucket; retention campaign response."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#churn_cohort_retention"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Customer Churn Rate (2024-06): moved increase from 9.73 to 17.06 (change 7.33, 7.33%).\nDrivers: data_completeness 0.7, customer_tenure 0. Model explains 0% of the movement. Confidence: Abstained: Data completeness 70.2% is below the 90% required \u2014 the movement cannot be trusted.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2405,
+          "completion_tokens": 96,
+          "total_tokens": 2502,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-06-01",
+      "rank": 10,
+      "kpi_name": "Units Sold",
+      "period": "2024-06-01",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1207.29,
+        "current_value": 1299,
+        "absolute_change": 91.71,
+        "pct_change": 7.6,
+        "z_score": 2.57,
+        "direction": "increase",
+        "data_points_used": 61,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 61,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 61 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 71.29,
+          "contribution_pct": 77.7,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 26.95,
+          "contribution_pct": 29.4,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -5.9,
+          "contribution_pct": 6.4,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -0.62,
+          "contribution_pct": 0.7,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 14.26,
+            "value_max": 28.52,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 5.39,
+            "value_max": 10.78,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 1.77,
+            "value_max": 2.95,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#defaults"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-06-01): moved increase from 1,207.29 to 1,299 (change 91.71, 7.6%).\nDrivers: product_mix 71.29, product_mix 26.95, product_mix -5.9, product_mix -0.62. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3402,
+          "completion_tokens": 110,
+          "total_tokens": 3512,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Gross Margin %|2024-05-15",
+      "rank": 11,
+      "kpi_name": "Gross Margin %",
+      "period": "2024-05-15",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 37.25,
+        "current_value": 34.76,
+        "absolute_change": -2.49,
+        "pct_change": -6.68,
+        "z_score": -2.86,
+        "direction": "decrease",
+        "data_points_used": 44,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "high",
+        "score": 100.0,
+        "business_explained_pct": 100.0,
+        "arithmetic_explained_pct": 101.2,
+        "data_staleness_hours": 0.0,
+        "history_points": 44,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (44 days).",
+        "reasons": [
+          "Business-explained 100.0% of the movement (arithmetic: 101.2%)",
+          "Data staleness: 0h",
+          "History depth: 44 days of baseline"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2.506,
+          "contribution_pct": 99.5,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "unit_cost",
+          "contribution_value": -0.013,
+          "contribution_pct": 0.5,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Margin Recovery",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Assess gross-margin impact against volume upside; decide between price restoration and cost takeout.",
+            "Model margin-neutral alternatives (bundling, tiered pricing) before restoring price."
+          ],
+          "expected_impact": {
+            "value_min": 1.25,
+            "value_max": 2.0,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable margin points from price restoration / margin-neutral repricing."
+          },
+          "monitoring_plan": [
+            "Daily gross margin % vs baseline; price ladder review."
+          ],
+          "actionable": true,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#margin_price_compression"
+        },
+        {
+          "driver_name": "unit_cost",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#defaults"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Gross Margin % (2024-05-15): moved decrease from 37.25 to 34.76 (change -2.49, -6.68%).\nDrivers: unit_price -2.51, unit_cost -0.01. Model explains 100% of the movement. Confidence: High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (44 days).\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2360,
+          "completion_tokens": 102,
+          "total_tokens": 2462,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-06-23",
+      "rank": 12,
+      "kpi_name": "Units Sold",
+      "period": "2024-06-23",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1256.0,
+        "current_value": 1356,
+        "absolute_change": 100.0,
+        "pct_change": 7.96,
+        "z_score": 2.3,
+        "direction": "increase",
+        "data_points_used": 83,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 83,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 83 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 47.62,
+          "contribution_pct": 47.6,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 45.52,
+          "contribution_pct": 45.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 37.52,
+          "contribution_pct": 37.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -19.81,
+          "contribution_pct": 19.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -10.86,
+          "contribution_pct": 10.9,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 9.52,
+            "value_max": 19.05,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Sports & Outdoors volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 9.1,
+            "value_max": 18.21,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 7.5,
+            "value_max": 15.01,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 5.94,
+            "value_max": 9.9,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 3.26,
+            "value_max": 5.43,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-06-23): moved increase from 1,256 to 1,356 (change 100, 7.96%).\nDrivers: product_mix 47.62, product_mix 45.52, product_mix 37.52, product_mix -19.81, product_mix -10.86. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 4027,
+          "completion_tokens": 114,
+          "total_tokens": 4141,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-04-13",
+      "rank": 13,
+      "kpi_name": "Units Sold",
+      "period": "2024-04-13",
+      "category": null,
+      "insufficient_history": true,
+      "anomaly": {
+        "baseline_value": 1169.08,
+        "current_value": 1244,
+        "absolute_change": 74.92,
+        "pct_change": 6.41,
+        "z_score": 2.82,
+        "direction": "increase",
+        "data_points_used": 12,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 12,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Abstained: Baseline history is only 12 days (minimum 21) \u2014 cannot reliably assess this movement.",
+        "reasons": [
+          "Baseline history is only 12 days (minimum 21) \u2014 cannot reliably assess this movement."
+        ],
+        "abstain_reasons": [
+          "insufficient_history"
+        ]
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 73.33,
+          "contribution_pct": 97.9,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 29.83,
+          "contribution_pct": 39.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -20.67,
+          "contribution_pct": 27.6,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -7.58,
+          "contribution_pct": 10.1,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 14.67,
+            "value_max": 29.33,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 5.97,
+            "value_max": 11.93,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 6.2,
+            "value_max": 10.34,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 2.27,
+            "value_max": 3.79,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-04-13): moved increase from 1,169.08 to 1,244 (change 74.92, 6.41%).\nDrivers: product_mix 73.33, product_mix 29.83, product_mix -20.67, product_mix -7.58. Model explains 50% of the movement. Confidence: Abstained: Baseline history is only 12 days (minimum 21) \u2014 cannot reliably assess this movement.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3498,
+          "completion_tokens": 106,
+          "total_tokens": 3604,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-05-26",
+      "rank": 14,
+      "kpi_name": "Units Sold",
+      "period": "2024-05-26",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1201.1,
+        "current_value": 1282,
+        "absolute_change": 80.9,
+        "pct_change": 6.74,
+        "z_score": 2.45,
+        "direction": "increase",
+        "data_points_used": 55,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 55,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 55 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 64.52,
+          "contribution_pct": 79.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 34.0,
+          "contribution_pct": 42.0,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -14.81,
+          "contribution_pct": 18.3,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -2.81,
+          "contribution_pct": 3.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 12.9,
+            "value_max": 25.81,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 6.8,
+            "value_max": 13.6,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 4.44,
+            "value_max": 7.41,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#defaults"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-05-26): moved increase from 1,201.1 to 1,282 (change 80.9, 6.74%).\nDrivers: product_mix 64.52, product_mix 34, product_mix -14.81, product_mix -2.81. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3401,
+          "completion_tokens": 109,
+          "total_tokens": 3510,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-04-30",
+      "rank": 15,
+      "kpi_name": "Revenue",
+      "period": "2024-04-30",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 56317.45,
+        "current_value": 60302.24,
+        "absolute_change": 3984.79,
+        "pct_change": 7.08,
+        "z_score": 2.13,
+        "direction": "increase",
+        "data_points_used": 29,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 29,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 29 days of baseline",
+          "Not below high: business-explained 50.0% < 80%, history 29d < 30d"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -1.57,
+          "contribution_pct": 0.0,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": 3987.91,
+          "contribution_pct": 100.1,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -1.55,
+          "contribution_pct": 0.0,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#defaults"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate whether the volume gain is sustainable (promo, seasonality, or structural demand).",
+            "Check stock levels to confirm the surge is fulfillable without service degradation."
+          ],
+          "expected_impact": {
+            "value_min": 797.58,
+            "value_max": 1595.16,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if the driver is structural; assumes no pull-forward from promos."
+          },
+          "monitoring_plan": [
+            "Weekly units vs prior-period trend; promo cannibalization check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_volume_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-04-30): moved increase from 56,317.45 to 60,302.24 (change 3,984.79, 7.08%).\nDrivers: unit_price -1.57, units_sold 3,987.91, product_mix -1.55. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2850,
+          "completion_tokens": 107,
+          "total_tokens": 2957,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-06-26",
+      "rank": 16,
+      "kpi_name": "Revenue",
+      "period": "2024-06-26",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 59364.05,
+        "current_value": 63482.34,
+        "absolute_change": 4118.29,
+        "pct_change": 6.94,
+        "z_score": 2.17,
+        "direction": "increase",
+        "data_points_used": 86,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "low",
+        "score": 49.2,
+        "business_explained_pct": 49.2,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 86,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Low confidence \u2014 only 49.2% of the movement is business-explained.",
+        "reasons": [
+          "Business-explained 49.2% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 86 days of baseline",
+          "Not below high: business-explained 49.2% < 80%; below medium: business-explained 49.2% < 50%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -72.16,
+          "contribution_pct": 1.8,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": 4200.14,
+          "contribution_pct": 102.0,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -9.68,
+          "contribution_pct": 0.2,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#defaults"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate whether the volume gain is sustainable (promo, seasonality, or structural demand).",
+            "Check stock levels to confirm the surge is fulfillable without service degradation."
+          ],
+          "expected_impact": {
+            "value_min": 840.03,
+            "value_max": 1680.06,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if the driver is structural; assumes no pull-forward from promos."
+          },
+          "monitoring_plan": [
+            "Weekly units vs prior-period trend; promo cannibalization check."
+          ],
+          "actionable": true,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_volume_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-06-26): moved increase from 59,364.05 to 63,482.34 (change 4,118.29, 6.94%).\nDrivers: unit_price -72.16, units_sold 4,200.14, product_mix -9.68. Model explains 49.2% of the movement. Confidence: Low confidence \u2014 only 49.2% of the movement is business-explained.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2825,
+          "completion_tokens": 95,
+          "total_tokens": 2920,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Customer Churn Rate|2024-05",
+      "rank": 17,
+      "kpi_name": "Customer Churn Rate",
+      "period": "2024-05",
+      "category": null,
+      "insufficient_history": true,
+      "anomaly": {
+        "baseline_value": 4.5,
+        "current_value": 9.73,
+        "absolute_change": 5.23,
+        "pct_change": 5.23,
+        "z_score": null,
+        "direction": "increase",
+        "data_points_used": 1,
+        "data_completeness": 1.0
+      },
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": 0.0,
+        "arithmetic_explained_pct": 0.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 1,
+        "history_unit": "months",
+        "history_required": 3,
+        "data_completeness": 1.0,
+        "message": "Abstained: Baseline history is only 1 months (minimum 3) \u2014 cannot reliably assess this movement.",
+        "reasons": [
+          "Baseline history is only 1 months (minimum 3) \u2014 cannot reliably assess this movement."
+        ],
+        "abstain_reasons": [
+          "insufficient_history"
+        ]
+      },
+      "drivers": [
+        {
+          "driver_name": "data_completeness",
+          "contribution_value": 1.0,
+          "contribution_pct": 0.0,
+          "analytical_method": "data_quality_check",
+          "attribution_weight": 0.0
+        },
+        {
+          "driver_name": "customer_tenure",
+          "contribution_value": 0.0,
+          "contribution_pct": 0.0,
+          "analytical_method": "cohort_analysis",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "data_completeness",
+          "lever": "Data Quality & Pipeline",
+          "owner": "Data Engineering Lead",
+          "actions": [
+            "Fix the customer-roster sync failure; backfill null statuses from the source CRM.",
+            "Add a completeness monitor with an alert at the 90% gate for churn analyses."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "Not a business impact \u2014 unblocks trustworthy churn analysis."
+          },
+          "monitoring_plan": [
+            "Monthly roster completeness vs 90% gate; sync job health."
+          ],
+          "actionable": true,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#churn_data_quality_recovery"
+        },
+        {
+          "driver_name": "customer_tenure",
+          "lever": "Customer Retention",
+          "owner": "Customer Success Lead",
+          "actions": [
+            "Launch targeted retention outreach for the 3-6mo cohort (11.4% churn this month).",
+            "Probe why 3-6mo churns (onboarding, pricing, product gaps) with the CS team."
+          ],
+          "expected_impact": {
+            "value_min": 0.0,
+            "value_max": 0.0,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Reduction in churn rate points if the targeted cohort responds."
+          },
+          "monitoring_plan": [
+            "Monthly cohort churn rate by tenure bucket; retention campaign response."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#churn_cohort_retention"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Customer Churn Rate (2024-05): moved increase from 4.5 to 9.73 (change 5.23, 5.23%).\nDrivers: data_completeness 1, customer_tenure 0. Model explains 0% of the movement. Confidence: Abstained: Baseline history is only 1 months (minimum 3) \u2014 cannot reliably assess this movement.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2395,
+          "completion_tokens": 96,
+          "total_tokens": 2491,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Gross Margin %|2024-05-16",
+      "rank": 18,
+      "kpi_name": "Gross Margin %",
+      "period": "2024-05-16",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 37.14,
+        "current_value": 34.89,
+        "absolute_change": -2.25,
+        "pct_change": -6.06,
+        "z_score": -2.19,
+        "direction": "decrease",
+        "data_points_used": 45,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "high",
+        "score": 100.0,
+        "business_explained_pct": 100.0,
+        "arithmetic_explained_pct": 102.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 45,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (45 days).",
+        "reasons": [
+          "Business-explained 100.0% of the movement (arithmetic: 102.0%)",
+          "Data staleness: 0h",
+          "History depth: 45 days of baseline"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -2.375,
+          "contribution_pct": 103.5,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "unit_cost",
+          "contribution_value": 0.08,
+          "contribution_pct": 3.5,
+          "analytical_method": "margin_decomposition",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Pricing & Margin Recovery",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Assess gross-margin impact against volume upside; decide between price restoration and cost takeout.",
+            "Model margin-neutral alternatives (bundling, tiered pricing) before restoring price."
+          ],
+          "expected_impact": {
+            "value_min": 1.19,
+            "value_max": 1.9,
+            "unit": "percentage_points",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable margin points from price restoration / margin-neutral repricing."
+          },
+          "monitoring_plan": [
+            "Daily gross margin % vs baseline; price ladder review."
+          ],
+          "actionable": true,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#margin_price_compression"
+        },
+        {
+          "driver_name": "unit_cost",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "high",
+          "source_rule": "action_rules.yaml#defaults"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Gross Margin % (2024-05-16): moved decrease from 37.14 to 34.89 (change -2.25, -6.06%).\nDrivers: unit_price -2.38, unit_cost 0.08. Model explains 100% of the movement. Confidence: High confidence \u2014 100.0% of the movement is business-explained, data is fresh (0h) and history is sufficient (45 days).\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2359,
+          "completion_tokens": 101,
+          "total_tokens": 2460,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-06-20",
+      "rank": 19,
+      "kpi_name": "Revenue",
+      "period": "2024-06-20",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 58481.74,
+        "current_value": 62021.42,
+        "absolute_change": 3539.68,
+        "pct_change": 6.05,
+        "z_score": 2.18,
+        "direction": "increase",
+        "data_points_used": 80,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "low",
+        "score": 48.0,
+        "business_explained_pct": 48.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 80,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Low confidence \u2014 only 48.0% of the movement is business-explained.",
+        "reasons": [
+          "Business-explained 48.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 80 days of baseline",
+          "Not below high: business-explained 48.0% < 80%; below medium: business-explained 48.0% < 50%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "unit_price",
+          "contribution_value": -150.47,
+          "contribution_pct": 4.3,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 1.0
+        },
+        {
+          "driver_name": "units_sold",
+          "contribution_value": 3700.22,
+          "contribution_pct": 104.5,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -10.07,
+          "contribution_pct": 0.3,
+          "analytical_method": "price_volume_mix",
+          "attribution_weight": 0.0
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "unit_price",
+          "lever": "Investigate & Monitor",
+          "owner": "Analytics Owner",
+          "actions": [
+            "Confirm the movement with source data and the KPI contract formula before acting.",
+            "Re-check the movement in the next refresh cycle; escalate if it persists."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No lever rule matched this driver \u2014 impact not quantified."
+          },
+          "monitoring_plan": [
+            "Track the KPI against its contract baseline each refresh cycle."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#defaults"
+        },
+        {
+          "driver_name": "units_sold",
+          "lever": "Demand & Competitive Response",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate whether the volume gain is sustainable (promo, seasonality, or structural demand).",
+            "Check stock levels to confirm the surge is fulfillable without service degradation."
+          ],
+          "expected_impact": {
+            "value_min": 740.04,
+            "value_max": 1480.09,
+            "unit": "USD",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if the driver is structural; assumes no pull-forward from promos."
+          },
+          "monitoring_plan": [
+            "Weekly units vs prior-period trend; promo cannibalization check."
+          ],
+          "actionable": true,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_volume_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Pricing & Promotions",
+          "owner": "Pricing Lead (CFO)",
+          "actions": [
+            "Treat the mix term as the interaction between price and volume changes \u2014 no standalone lever.",
+            "Fold it into the pricing review of the dominant category before signing off on recovery estimates."
+          ],
+          "expected_impact": {
+            "value_min": null,
+            "value_max": null,
+            "unit": null,
+            "basis": "not_quantified",
+            "note": "No quantified impact for this recommendation."
+          },
+          "monitoring_plan": [
+            "Track category mix share vs baseline each week."
+          ],
+          "actionable": false,
+          "confidence_status": "low",
+          "source_rule": "action_rules.yaml#revenue_mix_interaction"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-06-20): moved increase from 58,481.74 to 62,021.42 (change 3,539.68, 6.05%).\nDrivers: unit_price -150.47, units_sold 3,700.22, product_mix -10.07. Model explains 48% of the movement. Confidence: Low confidence \u2014 only 48.0% of the movement is business-explained.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 2826,
+          "completion_tokens": 95,
+          "total_tokens": 2921,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-05-05",
+      "rank": 20,
+      "kpi_name": "Units Sold",
+      "period": "2024-05-05",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1199.81,
+        "current_value": 1269,
+        "absolute_change": 69.19,
+        "pct_change": 5.77,
+        "z_score": 2.25,
+        "direction": "increase",
+        "data_points_used": 34,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 34,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 34 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 79.71,
+          "contribution_pct": 115.2,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 21.38,
+          "contribution_pct": 30.9,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -18.24,
+          "contribution_pct": 26.4,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -13.67,
+          "contribution_pct": 19.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 15.94,
+            "value_max": 31.88,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 4.28,
+            "value_max": 8.55,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 5.47,
+            "value_max": 9.12,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 4.1,
+            "value_max": 6.83,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-05-05): moved increase from 1,199.81 to 1,269 (change 69.19, 5.77%).\nDrivers: product_mix 79.71, product_mix 21.38, product_mix -18.24, product_mix -13.67. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3493,
+          "completion_tokens": 111,
+          "total_tokens": 3604,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-05-25",
+      "rank": 21,
+      "kpi_name": "Units Sold",
+      "period": "2024-05-25",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1199.62,
+        "current_value": 1268,
+        "absolute_change": 68.38,
+        "pct_change": 5.7,
+        "z_score": 2.25,
+        "direction": "increase",
+        "data_points_used": 54,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 54,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 54 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 74.62,
+          "contribution_pct": 109.1,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 13.95,
+          "contribution_pct": 20.4,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -12.48,
+          "contribution_pct": 18.2,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -7.71,
+          "contribution_pct": 11.3,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 14.92,
+            "value_max": 29.85,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 2.79,
+            "value_max": 5.58,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 3.74,
+            "value_max": 6.24,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 2.31,
+            "value_max": 3.85,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-05-25): moved increase from 1,199.62 to 1,268 (change 68.38, 5.7%).\nDrivers: product_mix 74.62, product_mix 13.95, product_mix -12.48, product_mix -7.71. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3493,
+          "completion_tokens": 110,
+          "total_tokens": 3603,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-06-16",
+      "rank": 22,
+      "kpi_name": "Units Sold",
+      "period": "2024-06-16",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1242.57,
+        "current_value": 1316,
+        "absolute_change": 73.43,
+        "pct_change": 5.91,
+        "z_score": 2.13,
+        "direction": "increase",
+        "data_points_used": 76,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 76,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 76 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 76.19,
+          "contribution_pct": 103.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 29.05,
+          "contribution_pct": 39.6,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -18.62,
+          "contribution_pct": 25.4,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -13.19,
+          "contribution_pct": 18.0,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 15.24,
+            "value_max": 30.48,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 5.81,
+            "value_max": 11.62,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 5.59,
+            "value_max": 9.31,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 3.96,
+            "value_max": 6.59,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-06-16): moved increase from 1,242.57 to 1,316 (change 73.43, 5.91%).\nDrivers: product_mix 76.19, product_mix 29.05, product_mix -18.62, product_mix -13.19. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3494,
+          "completion_tokens": 111,
+          "total_tokens": 3605,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-05-13",
+      "rank": 23,
+      "kpi_name": "Units Sold",
+      "period": "2024-05-13",
+      "category": null,
+      "insufficient_history": false,
+      "anomaly": {
+        "baseline_value": 1208.81,
+        "current_value": 1147,
+        "absolute_change": -61.81,
+        "pct_change": -5.11,
+        "z_score": -2.36,
+        "direction": "decrease",
+        "data_points_used": 42,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "medium",
+        "score": 50.0,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 42,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.",
+        "reasons": [
+          "Business-explained 50.0% of the movement (arithmetic: 100.0%)",
+          "Data staleness: 0h",
+          "History depth: 42 days of baseline",
+          "Not below high: business-explained 50.0% < 80%"
+        ],
+        "abstain_reasons": []
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -32.14,
+          "contribution_pct": 52.0,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -23.62,
+          "contribution_pct": 38.2,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -10.43,
+          "contribution_pct": 16.9,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 4.38,
+          "contribution_pct": 7.1,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 9.64,
+            "value_max": 16.07,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Grocery volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Grocery."
+          ],
+          "expected_impact": {
+            "value_min": 7.09,
+            "value_max": 11.81,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Apparel volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Apparel."
+          ],
+          "expected_impact": {
+            "value_min": 3.13,
+            "value_max": 5.21,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Home & Kitchen volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 0.88,
+            "value_max": 1.75,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": true,
+          "confidence_status": "medium",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-05-13): moved decrease from 1,208.81 to 1,147 (change -61.81, -5.11%).\nDrivers: product_mix -32.14, product_mix -23.62, product_mix -10.43, product_mix 4.38. Model explains 50% of the movement. Confidence: Medium confidence \u2014 50.0% business-explained; a material part of the movement is measured but its cause is unknown.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3497,
+          "completion_tokens": 111,
+          "total_tokens": 3609,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-04-21",
+      "rank": 24,
+      "kpi_name": "Units Sold",
+      "period": "2024-04-21",
+      "category": null,
+      "insufficient_history": true,
+      "anomaly": {
+        "baseline_value": 1178.15,
+        "current_value": 1245,
+        "absolute_change": 66.85,
+        "pct_change": 5.67,
+        "z_score": 2.05,
+        "direction": "increase",
+        "data_points_used": 20,
+        "data_completeness": null
+      },
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": 50.0,
+        "arithmetic_explained_pct": 100.0,
+        "data_staleness_hours": 0.0,
+        "history_points": 20,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Abstained: Baseline history is only 20 days (minimum 21) \u2014 cannot reliably assess this movement. Driver signals contradict each other \u2014 the explanation is not reliable.",
+        "reasons": [
+          "Baseline history is only 20 days (minimum 21) \u2014 cannot reliably assess this movement.",
+          "Driver signals contradict each other \u2014 the explanation is not reliable."
+        ],
+        "abstain_reasons": [
+          "insufficient_history",
+          "contradictory_signals"
+        ]
+      },
+      "drivers": [
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 82.55,
+          "contribution_pct": 123.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -21.05,
+          "contribution_pct": 31.5,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": 17.9,
+          "contribution_pct": 26.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        },
+        {
+          "driver_name": "product_mix",
+          "contribution_value": -12.55,
+          "contribution_pct": 18.8,
+          "analytical_method": "contribution",
+          "attribution_weight": 0.5
+        }
+      ],
+      "recommendations": [
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Grocery volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 16.51,
+            "value_max": 33.02,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand \u2014 Electronics",
+          "owner": "Category Manager \u2014 Electronics",
+          "actions": [
+            "Investigate the Electronics volume decline: competitor promo, demand shift, or supply issue.",
+            "Review Electronics pricing/promo plan and channel inventory for stockouts."
+          ],
+          "expected_impact": {
+            "value_min": 6.32,
+            "value_max": 10.53,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Daily Electronics units vs baseline; promo calendar review."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_electronics_decline"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Validate the Apparel volume gain; check promo pull-forward or seasonality.",
+            "Ensure stock and service capacity keep up with the surge."
+          ],
+          "expected_impact": {
+            "value_min": 3.58,
+            "value_max": 7.16,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Sustained upside if structural; assumes no promo pull-forward."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; stock coverage check."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_gain"
+        },
+        {
+          "driver_name": "product_mix",
+          "lever": "Category Demand",
+          "owner": "Category Manager (Commercial)",
+          "actions": [
+            "Investigate the Home & Kitchen volume decline with the category team.",
+            "Check for stockouts, assortment changes, or marketing support gaps in Home & Kitchen."
+          ],
+          "expected_impact": {
+            "value_min": 3.77,
+            "value_max": 6.28,
+            "unit": "units",
+            "basis": "driver_contribution_x_recovery_factor",
+            "note": "Recoverable units assuming the cause is found and addressed."
+          },
+          "monitoring_plan": [
+            "Weekly category units vs baseline; assortment/promo review."
+          ],
+          "actionable": false,
+          "confidence_status": "abstain",
+          "source_rule": "action_rules.yaml#units_category_decline"
+        }
+      ],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-04-21): moved increase from 1,178.15 to 1,245 (change 66.85, 5.67%).\nDrivers: product_mix 82.55, product_mix -21.05, product_mix 17.9, product_mix -12.55. Model explains 50% of the movement. Confidence: Abstained: Baseline history is only 20 days (minimum 21) \u2014 cannot reliably assess this movement. Driver signals contradict each other \u2014 the explanation is not reliable.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 3577,
+          "completion_tokens": 124,
+          "total_tokens": 3701,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Revenue|2024-06-29|Sports & Outdoors",
+      "rank": 25,
+      "kpi_name": "Revenue",
+      "period": "2024-06-29",
+      "category": "Sports & Outdoors",
+      "insufficient_history": true,
+      "anomaly": null,
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": null,
+        "arithmetic_explained_pct": null,
+        "data_staleness_hours": null,
+        "history_points": 11,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.",
+        "reasons": [
+          "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data."
+        ],
+        "abstain_reasons": [
+          "insufficient_history"
+        ]
+      },
+      "drivers": [],
+      "recommendations": [],
+      "narrative": {
+        "text": "[MOCK] Revenue (2024-06-29): moved  from  to  (change , %).\nConfidence: Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 1109,
+          "completion_tokens": 73,
+          "total_tokens": 1182,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Units Sold|2024-06-29|Sports & Outdoors",
+      "rank": 26,
+      "kpi_name": "Units Sold",
+      "period": "2024-06-29",
+      "category": "Sports & Outdoors",
+      "insufficient_history": true,
+      "anomaly": null,
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": null,
+        "arithmetic_explained_pct": null,
+        "data_staleness_hours": null,
+        "history_points": 11,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.",
+        "reasons": [
+          "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data."
+        ],
+        "abstain_reasons": [
+          "insufficient_history"
+        ]
+      },
+      "drivers": [],
+      "recommendations": [],
+      "narrative": {
+        "text": "[MOCK] Units Sold (2024-06-29): moved  from  to  (change , %).\nConfidence: Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 1110,
+          "completion_tokens": 73,
+          "total_tokens": 1184,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    },
+    {
+      "insight_id": "Gross Margin %|2024-06-29|Sports & Outdoors",
+      "rank": 27,
+      "kpi_name": "Gross Margin %",
+      "period": "2024-06-29",
+      "category": "Sports & Outdoors",
+      "insufficient_history": true,
+      "anomaly": null,
+      "confidence": {
+        "status": "abstain",
+        "score": null,
+        "business_explained_pct": null,
+        "arithmetic_explained_pct": null,
+        "data_staleness_hours": null,
+        "history_points": 11,
+        "history_unit": "days",
+        "history_required": 21,
+        "data_completeness": null,
+        "message": "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.",
+        "reasons": [
+          "Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data."
+        ],
+        "abstain_reasons": [
+          "insufficient_history"
+        ]
+      },
+      "drivers": [],
+      "recommendations": [],
+      "narrative": {
+        "text": "[MOCK] Gross Margin % (2024-06-29): moved  from  to  (change , %).\nConfidence: Insufficient history \u2014 cannot reliably assess this KPI movement. Category 'Sports & Outdoors' has only 11 days of data.\nFrom the CFO lens, the dollar impact leads: this movement matters to margin and cash position first.",
+        "provider": "mock",
+        "model": "mock-llm",
+        "mock": true,
+        "grounded": true,
+        "violations": [],
+        "persona": "CFO",
+        "usage": {
+          "prompt_tokens": 1112,
+          "completion_tokens": 74,
+          "total_tokens": 1187,
+          "model": "mock-llm",
+          "provider": "mock",
+          "source": "mock_estimate",
+          "mock": true
+        }
+      }
+    }
+  ],
+  "blocked": [],
+  "source": "sample-pipeline-snapshot (Phase 12 serves this live)"
+}
