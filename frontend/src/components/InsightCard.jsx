@@ -14,6 +14,59 @@ function weightStyle(w) {
   return WEIGHT_STYLES[key] || WEIGHT_STYLES[0.0];
 }
 
+// Tiny renderer for the markdown subset LLMs emit in narratives
+// (## headings, **bold**, *italic*, "- " bullets, line breaks).
+// Plain mock narratives pass through untouched. No HTML injection —
+// output is React nodes only.
+function inlineMd(text, keyBase) {
+  const parts = [];
+  const re = /\*\*(.+?)\*\*|\*([^*]+)\*/g;
+  let last = 0;
+  let m;
+  let k = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    if (m[1] != null) {
+      parts.push(
+        <strong key={`${keyBase}b${k++}`} className="font-semibold text-mist-bright">
+          {m[1]}
+        </strong>
+      );
+    } else {
+      parts.push(
+        <em key={`${keyBase}i${k++}`} className="italic text-mist">
+          {m[2]}
+        </em>
+      );
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
+function renderNarrative(text) {
+  const lines = String(text ?? "").split("\n");
+  const out = [];
+  lines.forEach((line, i) => {
+    if (!line.trim()) return;
+    let content = line;
+    let cls = "";
+    if (/^#{1,4}\s+/.test(content)) {
+      content = content.replace(/^#{1,4}\s+/, "");
+      cls = "mt-1.5 font-semibold text-mist-bright";
+    } else if (/^\s*[-•*]\s+/.test(content)) {
+      content = "•  " + content.replace(/^\s*[-•*]\s+/, "");
+    }
+    out.push(
+      <span key={i} className={"block leading-relaxed " + cls}>
+        {inlineMd(content, `l${i}`)}
+      </span>
+    );
+  });
+  return out;
+}
+
 function ExplainedBar({ label, pct, color }) {
   return (
     <div>
@@ -155,7 +208,7 @@ export default function InsightCard({ insight, unit, deltaUnit, lastVote, onVote
   const visibleRecs = showAllRecs ? recs : recs.slice(0, 3);
 
   return (
-    <article className="rounded-xl border border-line bg-ink-900 p-4">
+    <article className="rounded-xl border border-line bg-ink-900 p-4 transition-colors hover:border-accent/40">
       {/* header */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="num rounded bg-ink-700 px-1.5 py-0.5 text-[10px] text-mist-dim">
@@ -299,14 +352,20 @@ export default function InsightCard({ insight, unit, deltaUnit, lastVote, onVote
                 grounded ✓
               </span>
             ) : (
-              <span className="rounded border border-conf-low/30 bg-conf-low/10 px-1.5 py-0.5 text-[9px] text-conf-low">
-                ungrounded · {n.violations?.length ?? 0} violation(s) — discarded by code
+              <span
+                title="The code verifier compared every number in this narration against the fact JSON the LLM was given; it found one it did not authorize, so the narration is labeled untrusted."
+                className="rounded border border-conf-low/30 bg-conf-low/10 px-1.5 py-0.5 text-[9px] text-conf-low"
+              >
+                ungrounded · {n.violations?.length ?? 0} violation(s) — flagged by code
               </span>
             )}
           </div>
-          <p className={"text-[12px] leading-relaxed text-mist-bright/90 " + (showAllNarrative ? "" : "line-clamp-4")}>
-            {n.text}
-          </p>
+          <div className={"relative text-[12px] text-mist-bright/90 " + (showAllNarrative ? "" : "max-h-28 overflow-hidden")}>
+            {renderNarrative(n.text)}
+            {!showAllNarrative && n.text.length > 220 && (
+              <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-ink-850 to-transparent" />
+            )}
+          </div>
           {!showAllNarrative && n.text.length > 220 && (
             <button onClick={() => setShowAllNarrative(true)} className="mt-1 text-[11px] text-accent hover:underline">
               Show more
