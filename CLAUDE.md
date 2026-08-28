@@ -680,3 +680,136 @@ This log is how we track project state across sessions, so keep entries factual 
 ### Next phase (pending confirmation)
 - Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
 
+---
+
+## Iteration Log — Phase 8 Confirmed (Real Ollama 6/6) — 2026-08-28
+
+### What was done
+- Phase 8 confirmed against the real model: user ran `backend/test_real_narration.py` locally against a live `ollama serve` + `minimax-m3:cloud` — **all 6 runs PASSED** (Revenue @ 2024-05-13, Gross Margin % @ 2024-05-13, Customer Churn Rate @ 2024-06 × CFO + Category Manager). Every narrative was non-empty, `done_reason=stop` (no truncation), zero grounding violations, and every run confirmed `provider=ollama` / `mock=false` / usage `source=llm_response_metadata`.
+- Observed real-model metadata: thinking present in all runs (847–10,423 chars), `eval_count` 742–2,822 (well under the 4096 cap — the token-budget fix holds on the live model), latency 13.5–44.9 s, prompt tokens 2,685–3,543, completion tokens 742–2,822.
+- Persona differentiation confirmed genuine (not template-following): CFO leads with dollar-impact bottom line and decision frame; Category Manager leads with operational triage, sequencing, and category-team next steps. The abstain case (June churn) correctly rendered as abstain in both personas, cleared only the Data Quality & Pipeline lever as actionable, and named the 90% completeness gate.
+
+### Key decisions made
+- None new — Phase 8 implementation unchanged.
+
+### What remains
+- Phase 8 is fully confirmed. No open issues.
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+
+---
+
+## Iteration Log — Phase 9 (Feedback Loop) — 2026-08-28
+
+### What was done
+- Built `backend/engine/feedback.py` (placeholder → full module) — deterministic, no LLM, **no existing module modified**:
+  - **`insight_id()`** — deterministic, human-readable insight reference: `"Revenue|2024-05-13"` (aggregate) / `"Revenue|2024-06-29|Sports & Outdoors"` (per-category sparse flag). An insight is exactly the unit Phase 8 narrates — the `(kpi_name, period, category)` triple that `ConfidenceResult` / `ActionPlan.get_set()` / the narration harness already key on.
+  - **`FeedbackRecord`** dataclass (JSON-safe).
+  - **`FeedbackStore`** — SQLite at `backend/data/raw/feedback.db` (gitignored via `*.db`), table `insight_feedback`: `id, timestamp (ISO-8601 UTC), insight_id, kpi_name, period, category, persona, rating ('up'|'down' + CHECK constraint), note (optional), confidence_status, confidence_score` + index on `(insight_id, persona)`. Writes are fail-closed: unknown persona (union of contract `persona_access`), unknown KPI, period format vs KPI grain (daily `YYYY-MM-DD` / monthly `YYYY-MM`), invalid confidence status, and insight_id consistency — a caller-supplied id that doesn't match the derived one is rejected as a stale reference; the stored id is always the derived one, so tie-back is guaranteed by construction. `record()` → row id; `fetch(limit, insight_id, kpi_name, period, persona, rating, confidence_status, category)` newest-first plain dicts; `summary()` → per-insight vote counts + agreement rate, and the per-(KPI × confidence level × persona) up-rate table with computed feedback factors.
+  - **`attach_feedback_context(confidence_result, persona)`** — tie-back helper: builds the ready-to-record payload straight from Phase 5 pipeline output (works for anomalies and sparse-history flags alike), so a click maps to exactly the insight + persona + displayed confidence badge.
+  - **`feedback_factor()` / `adjusted_score()`** — pure, tested functions implementing the weighting design (see decisions): factor = 2 × Beta(1,1) posterior mean of the up-rate, clamped to [0.5, 1.5], zero votes → exactly 1.0; adjusted score = clamp(base × factor, 0, 100). **Not wired into any existing module** — applying it to feed ordering is Phase 12's job.
+- Committed `backend/test_feedback.py` (standalone regression tests, no LLM, temp DB only): insight_id derivation; record/fetch round-trip + filters + newest-first; persistence across store reopens; 7 fail-closed negative cases (invalid rating, unknown persona, unknown KPI, insight_id mismatch, daily date on monthly KPI, month string on daily KPI, invalid confidence status — verified no partial writes); tie-back from a real anomaly + a sparse flag; factor/adjusted-score math; summary aggregation incl. abstain exclusion; JSON-serializability sweep. **All pass.**
+- Verified against the real Phase 5 pipeline (all 4 demo scenarios): Revenue@2024-05-13 (medium / 72.7), Gross Margin %@2024-05-13 (high / 100.0), June churn (abstain / score None), Sports & Outdoors flag (abstain / score None) — all tie back with exactly the status and score the UI would display; abstain votes are recorded but excluded from factor computation.
+- Working demo of the weighting design: Revenue|medium — CFO 1 up → factor 1.333 (72.7 → 96.9), Category Manager 2 downs → factor 0.5 (72.7 → 36.4), no-vote baseline → factor 1.0 (72.7 unchanged).
+
+### Key decisions made
+- **Insight key = (kpi_name, period, category)** — the unit narration renders. The same insight shown to two personas is two narratives, so votes are stored per (insight_id, persona): same `insight_id`, separate rows.
+- **Feedback is a trust label on (insight, persona), never evidence:** it never mutates stored numbers and never mutates the Phase 5 evidence-based confidence — the status stays the deterministic prior and abstain stays abstain (user opinion cannot repair broken evidence; votes ON abstains are still recorded, to measure whether abstention matched expectations).
+- **Weighting design — two consumption points, no retraining:** (a) feed ranking: `effective_rank = Phase 5 score × feedback_factor`, factor = 2 × Beta(1,1) posterior mean of the (KPI, level, persona) up-rate, clamped to [0.5, 1.5]; zero votes → exactly 1.0 so no-feedback behavior is bit-identical to pre-Phase 9; the Beta(1,1) prior shrinks single votes so one vote cannot move a ranking much. (b) calibration signal: the per-(KPI × level × persona) up-rate table (via `summary()`) — systematic down-votes on a level for a KPI point at that KPI's contract parameters (attribution weights / thresholds) for human review, i.e. an editable YAML change, not model retraining.
+- **Persona-scoped:** a Category Manager down-vote adjusts the Category Manager's view only (the personas see different narratives of the same insight).
+- **DB location** `backend/data/raw/feedback.db` — mirrors the `access_log.db` convention (stdlib `sqlite3`, gitignored via `backend/data/raw/*.db`).
+- **No API endpoints added** — consistent with Phases 6/7, where API/UI wiring was deferred to Phase 12; the store + context helper + factor functions are all ready to consume.
+
+### What remains
+- Phase 9 is fully complete per Section 8 (thumbs up/down capture per insight, SQLite log, and a documented mechanism for how feedback feeds confidence weighting over time). No open issues.
+- Phase 12 wiring: POST/GET feedback endpoints + UI thumbs buttons + applying `feedback_factor` to feed ordering.
+
+### Next phase (pending confirmation)
+- Phase 10 — Telemetry (wrap the LLM call and analytics pipeline; record latency, token usage from LLM response metadata, and estimated cost-at-scale; expose via API endpoint and show in the UI)
+
+---
+
+## Iteration Log — Phase 10 (Telemetry) — 2026-08-28
+
+### What was done
+- Built `backend/engine/telemetry.py` (placeholder → full module) — deterministic instrumentation wrapping existing modules; **no engine module modified, no LLM involved in the measurement itself**:
+  - **`TelemetryCollector`** (in-memory, thread-safe, JSON-safe `snapshot()`; opt-in JSONL append for run-to-run persistence; bounded 200-event ring for timeline/debug):
+    - Stage timing: `stage(name)` context manager + `record_stage(name, ms)` → per-stage count/total/avg/min/max.
+    - LLM call recording: `record_llm_call(response, persona, grounded, violations, prompt_chars)` consumes the normalized `LLMResponse` verbatim — provider, model, latency, token counts from `response.usage` (model response metadata), truncation/`done_reason` from `meta`, grounding pass/fail + violation count; per-persona and per-model breakdowns.
+    - `narrate(client, facts, persona)` — one-step timed prompt → call → grounding check → record (Phase 12 endpoints will call this).
+    - `record_pipeline(total_ms, stages)` + **`instrument_pipeline(collector, …)`** — times all 5 deterministic stages (detection → reconciliation → decomposition → confidence → actions) by calling the SAME entry points the uninstrumented pipeline uses (output parity verified in tests).
+  - **Cost model (honest by construction):** per-call `estimated_cost_usd` = tokens × rate, rates configurable via `TELEMETRY_INPUT_RATE_1M` / `TELEMETRY_OUTPUT_RATE_1M` (default `0.0` → `pricing: free_tier`, cost $0.00 — the truth for Ollama's free tier). `project_cost_at_scale(calls)` = average token usage of recorded REAL calls × configured rates (returns `None` + explanatory note when no real calls exist). **Mock usage is counted separately (`mock_tokens`) and never enters real token totals or cost** — consistent with Phase 8's `mock_estimate` labeling.
+  - **`GET /telemetry`** endpoint added to `backend/api/main.py` (returns the default collector's snapshot — explicitly part of the Phase 10 spec). Full insight/narration endpoints remain Phase 12; the UI panel is Phase 11.
+  - Documented the two rate env vars in `.env.example`.
+- Committed `backend/test_telemetry.py` (standalone, no real LLM): stage timing + aggregates; real-shaped `LLMResponse` recording (tokens verbatim, free-tier cost); mock recording (separate counters, excluded from real tokens/cost); cost math at custom rates + at-scale projection (1M+1M tokens @ $2/$3 → $5.00/call → $5,000 @ 1,000 calls); truncation + grounding-fail counters; `instrument_pipeline` on the real dataset (5 stages timed, output parity 24 anomalies / 27 confidence / 78 recommendations vs uninstrumented); `narrate()` end-to-end via MockProvider (grounded + recorded); `GET /telemetry` via FastAPI TestClient (200, shape, JSON-safe); opt-in JSONL; JSON sweep. **All pass.**
+- Verified a live sample snapshot on the real dataset: pipeline total 643.8 ms (detection 37.8 / reconciliation 21.8 / decomposition 569.1 / confidence 0.6 / actions 14.4), one mock narration recorded with `mock_tokens` 3,149 prompt + 109 completion, grounding 1/1 passed, `pricing: free_tier`.
+- Bugs found & fixed during testing: (a) **re-entrant deadlock** — `snapshot()` held the non-re-entrant `threading.Lock` while calling `project_cost_at_scale()`, which re-acquires it → the first `snapshot()` call hung forever; fixed by switching to `threading.RLock` (commented at the lock). (b) Test-side rounding artifact in the avg_ms assertion (1dp rounding) — fixed with a tolerance.
+
+### Key decisions made
+- **Wrap, don't patch:** `instrument_pipeline()` calls the same entry points (`run_detection` / `reconcile` / `decompose_all` / `score_all` / `recommend_all`) the uninstrumented pipeline uses, so engine code stays untouched and parity is testable; the `stage()` context manager is available for Phase 12 endpoints.
+- **Tokens come only from response metadata** (`source=llm_response_metadata`); mock estimates are counted separately and never billed — the brief's "visible LLM vs non-LLM breakdown" is served by the snapshot's `real_calls` / `mock_calls` split plus `usage_sources`.
+- **Cost is free-tier by default, with an at-scale knob:** default $0 rates report `free_tier`; hypothetical paid rates via env show what the same recorded volume would cost — the "estimated cost-at-scale" the brief asks for, without inventing a cost where there is none.
+- **In-memory + opt-in JSONL rather than SQLite:** telemetry is high-volume/ephemeral per process (unlike the auditable access/feedback logs); JSONL keeps persistence cheap when it's wanted.
+- **Scale projection bases itself on real-call averages only** (no real calls → `None` + note), so the figure is never derived from mock estimates.
+
+### What remains
+- Phase 10 is fully complete per Section 8 (LLM call and analytics pipeline wrapped; latency + token usage from response metadata + estimated cost-at-scale recorded; exposed via API endpoint). No open issues.
+- Phase 11 UI: the telemetry panel renders the snapshot. Phase 12: pipeline/narration endpoints will call `instrument_pipeline()` / `collector.narrate()` on the default collector so the panel is populated end-to-end.
+
+### Next phase (pending confirmation)
+- Phase 11 — Frontend Dashboard (KPI trend charts, insight feed with confidence badges, persona switcher, LLM-vs-non-LLM indicator per card, access-blocked state, telemetry panel)
+
+
+## Iteration Log — Phase 11 (Frontend Dashboard) — 2026-08-28
+
+### What was done
+- Built the dashboard in `frontend/` — **Vite 5 + React 18 + Tailwind 3.4 + Recharts** (dark "control room" theme, monospace numerals, no template look, no external fonts):
+  - **`src/api/client.js`** — live-first fetchers for `/api/meta`, `/api/timeseries`, `/api/insights?persona=`, `/telemetry` (relative URLs; Vite dev server proxies them to `localhost:8000` via `vite.config.js`, which also sets `server.allowedHosts: true` for the sandbox preview host). Transparent fallback to statically imported sample JSON with a per-endpoint `live` flag rendered as "live" / "sample snapshot" chips in the footer. Phase 12 endpoints make the insights/timeseries/meta paths live with **zero frontend changes**.
+  - **Sample snapshot generator** `backend/data/export_frontend_sample.py` (run from `backend/`, venv): runs the REAL instrumented pipeline (Phase 10) with `LLM_MOCK_MODE=true` forced, narrates every insight per persona via `collector.narrate()` (so telemetry.json is a real recorded run), applies Phase 6 `PermissionGuard(auto_log=False)` with the same per-KPI blocked dedupe as the access log, and writes `frontend/src/data/sample/{meta,timeseries,insights_cfo,insights_category_manager,telemetry}.json` (committed). Every number in the sample is pipeline-derived; narration is labeled `[MOCK]` with `mock: true` flags everywhere it renders.
+  - **UI:** header (brand mark, persona switcher CFO ⇄ Category Manager, per-source freshness chips from reconciliation); 2×2 KPI trend cards (Revenue with Total / By-category toggle, Units Sold, Gross Margin %, monthly Customer Churn bars colored by data completeness — June 70.2% red; week-7 anomaly band + Sports launch markers; delta chips with per-KPI good-direction semantics: churn up = red); insight feed in priority order (rank chip, confidence badge High/Medium/Low/Abstain, baseline→current movement + z, business-explained vs arithmetic-explained bars, decomposition drivers with contribution bars and attribution-weight chips [known cause 1.0 / measured 0.5 / context 0.0], abstain box with reasons, recommendations with owner/actionable chips/quantified impact/impact note/monitoring, collapsible "show all 78"), narrative block with `[MOCK] minimax-m3:cloud` label + grounded ✓/violations chip, and a per-card footer separating "Code (deterministic)" from "LLM: narration only"; **blocked state** — Category Manager sees a lock card for Gross Margin % (decision reason + contract source + "blocked before narration") instead of data, in both the feed and the KPI grid; telemetry panel (stage bars, real/mock call split, real vs mock tokens, grounding rate, cost + at-scale projection + free-tier note).
+- Verified: `npm run build` clean (845 modules; chunk-size warning is recharts bundle size, acceptable for a prototype); **SSR smoke render** of every component against the full sample data (all 27 CFO cards + CM feed + blocked card + 4 KPI cards + header + telemetry) — 22 content probes pass (week-7 band, launch marker, z -16.1, churn completeness 70.2%, mock/grounded labels, blocked reason text, telemetry mock/real split), no NaN; live checks via the running dev server: page + proxied `/telemetry` 200 under the preview host, `/api/insights` 404 → sample fallback engages as designed.
+- Bugs found & fixed during testing: (a) `expected_impact` is `{value_min, value_max, unit, basis, note}`, not `{min, max}` — first draft would have rendered "NaN"; fixed to the real shape and to surface the deterministic `note` text (also skips 0–0 impacts). (b) Vite 5.4 rejected the sandbox preview host (403) — fixed with `server.allowedHosts: true`. (c) Telemetry fallback: a fresh backend instance has an EMPTY live collector (no stages, 0 calls) — the client now falls back to the sample snapshot (a real recorded run) and labels it, instead of showing an empty panel.
+
+### Key decisions made
+- **Sample-first with explicit labels, live-ready plumbing:** the insight endpoints don't exist yet (Phase 12), so the dashboard renders a committed snapshot generated by the real pipeline with clearly-labeled mock narration — no fake data, and the "sample snapshot" chips make the provenance visible in the UI. The moment Phase 12 ships the endpoints, the same client code goes live with no UI changes.
+- **Sample generator is a real pipeline run, not hand-written JSON** — guarantees the dashboard's sample matches engine output exactly (24 anomalies / 27 confidence / 78 recommendations; CFO 27 insights / 0 blocked; CM 22 insights / 1 blocked KPI = Gross Margin %), and re-running the script after any engine change refreshes the snapshot.
+- **Per-KPI good-direction for delta chips** (churn up = bad) instead of naive red/green-by-sign.
+- **Recharts over custom SVG** for the 4 KPI charts (band/launch markers via ReferenceArea/ReferenceLine); Tailwind for everything else; no component libraries to keep the bundle honest.
+
+### What remains
+- Phase 11 is complete per Section 8 (KPI trend charts, insight feed with confidence badges, persona switcher, LLM-vs-non-LLM indicator per card, access-blocked state, telemetry panel). No open issues.
+- Phase 12 wiring: `GET /api/insights?persona=`, `GET /api/timeseries`, `GET /api/meta` endpoints (calling `instrument_pipeline()` / `collector.narrate()` on the default collector so the live telemetry panel populates), plus the 4-scenario demo path.
+
+### Next phase (pending confirmation)
+- Phase 12 — Integration & Polish (live API endpoints for insights/timeseries/meta, feedback POST/GET + thumbs UI, demo script for the 4 scripted scenarios, final polish)
+
+## Iteration Log — Phase 12 (Integration & Polish) — 2026-08-28
+
+### What was done
+- **The dashboard is now fully live — zero sample-fallback paths are exercised while the backend is up.** The Phase 11 client needed no changes: it already preferred live, so shipping the endpoints switched it over.
+- **Shared feed service** `backend/api/insights_service.py` — `build_timeseries()` + `build_insights()` now live in ONE module used by both the live endpoints and the sample exporter (the exporter's duplicated logic was deleted; the sample can no longer drift from the API). `build_insights()` supports a `narratives` cache dict: present entries are reused, missing ones are narrated via `collector.narrate()` — so a feed rebuild after a vote is pure re-ranking with zero extra LLM calls.
+- **`backend/api/main.py` (v0.2.0):**
+  - **Startup (lifespan):** loads the raw CSVs and runs `instrument_pipeline()` once on the default collector — `/telemetry` is populated with real stage timings as soon as the server boots (BI_SKIP_PIPELINE=true escape hatch).
+  - **`GET /api/meta`** (window, personas, reconciliation freshness), **`GET /api/timeseries`** (4 KPIs + week-7 band / launch markers / churn completeness), **`GET /api/insights?persona=`** (Phase 6 access filter + Phase 5 outputs verbatim + narration **lazily per persona on first request**, cached per insight_id).
+  - **`POST /api/feedback`** — Phase 9's `FeedbackStore` wired in: the confidence context (status/score/category) is derived SERVER-SIDE from the pipeline result, never from the client; fail-closed validation (unknown persona 400, unknown insight_id 404, bad rating 400). A vote rebuilds that persona's feed (re-rank only).
+  - **`GET /api/feedback/summary[?persona=]`** — Phase 9's calibration-signal table (per-insight votes + per-(KPI × level × persona) up-rate and factor; abstain rows counted but excluded from factors).
+  - **Feed ordering (Phase 9 consumption point, now wired):** scored insights ranked by `effective_rank = Phase-5 score × feedback_factor`, ties by pipeline order; abstains (score None) sink to the bottom. No votes → factor exactly 1.0 → pure Phase-5 score order. This supersedes the Phase 11 sample's detection-priority ordering — deliberate, per the Phase 9 design.
+- **Frontend polish:** thumbs up/down on every insight card (vote counts, last-vote highlight, ×factor chip when ≠ 1.0, abstain-vote tooltip "recorded for calibration, excluded from ranking"), feed re-fetches after a vote (instant — no LLM calls), "ranked by confidence × feedback factor · abstains last" note, graceful offline error banner if the backend is down, and a collapsible **Demo guide** card with the 4 scripted scenarios.
+- **Sample snapshot regenerated** via the refactored exporter (same shared code path, new ordering + feedback blocks; counts unchanged: 24 anomalies / 27 confidence / 78 recs; CFO 27/0 blocked, CM 22/1).
+- **Verification:** `test_integration.py` — **55 assertions, all pass** (startup + meta + timeseries shapes; CFO 27 / CM 22+1 blocked; all narratives mock+grounded; monotone score ordering with abstains last; **Phase 9 numbers reproduced through the live API** — CFO 1 up → 1.333 → 96.9, CM 2 downs → 0.5 → 36.4 and the insight sinking rank 3 → 14, factor applying to the whole (Revenue, medium, persona) level, abstain vote excluded from factor; fail-closed 400/404s; narration cache — re-fetches never re-call the LLM, 49 calls total; telemetry 5 stages + grounding 49/49 + mock tokens isolated). Regression: `test_telemetry.py`, `test_feedback.py`, `test_grounding_normalization.py` all still pass. Frontend: `npm run build` clean + SSR smoke render (26 content probes, NaN-free). Live walkthrough via the Vite proxy: all endpoints 200, the full 4-scenario demo path executed (then the dev feedback.db was reset so the demo starts clean).
+- Bugs found & fixed during testing: (a) **TelemetryPanel key mismatch (Phase 11)** — the panel read `llm.prompt_tokens` / `avg_call_ms` / `grounding_checked` (flat), but the snapshot nests `llm.tokens{prompt,completion,total}`, `llm.avg_latency_ms`, `llm.grounding{checked,passed,failed,violations}` → tokens/grounding/latency rows silently rendered 0/"n/a"; fixed to the real shape. (b) `api_feedback_summary` aggregated into a `"downs"` dict but incremented `"down"` → KeyError on the first summary call with a down-vote; fixed. (c) Test-side: expected the old detection-priority rank (2) for Revenue|2024-05-13 instead of the score-based rank (3) — the code was right, the expectation wasn't.
+
+### Key decisions made
+- **Startup pipeline + lazy narration:** the 0.6 s deterministic run happens once at boot (cards/meta/timeseries are instantly available and /telemetry shows real timings); narration (27/22 calls per persona) happens on first feed request for that persona and is cached forever — the telemetry panel visibly fills as the demo runs, and votes never re-trigger the LLM.
+- **One feed code path for API and sample** (engine-adjacent service in `api/` — it consumes engine output + narration, so it sits at the API layer; engine modules untouched).
+- **Score-based feed ordering replaces detection-priority ordering** (documented above) — this is the Phase 9 "wiring happens in Phase 12" item, not a regression.
+- **Demo runs in forced mock mode** (`LLM_MOCK_MODE=true` on the dev server): Ollama is not running in this sandbox and 49 real cloud-model calls would take many minutes; mock narration is clearly labeled in the UI ([MOCK] chip + mock: true) and is a faithful deterministic oracle per Phase 8. Real mode: start Ollama and unset the env var — no code change.
+- **Confidence context is server-derived on votes** — a client can record a vote but cannot forge the insight's confidence status/score into the log; the store's fail-closed validation (Phase 9) does the rest.
+
+### What remains
+- All 12 phases of the plan in Section 8 are complete. No open issues.
+- Optional (out of scope, not started): persisting per-browser vote state, a paid-provider rate config demo, packaging/deployment story.
+
+### Next phase
+- None — the prototype is feature-complete for the Accenture Innovation Challenge Round 2 demo. Suggested demo flow: open the dashboard → follow the 4 numbered scenarios in the Demo guide → end on the feedback weighting (CM 👎👎 → 36.4, CFO 👍 → 96.9) to show the closed loop: deterministic detection → confidence → actions → human feedback → re-ranking, with the LLM only ever narrating.
