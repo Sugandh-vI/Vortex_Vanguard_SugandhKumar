@@ -104,7 +104,12 @@ export default function App() {
       <Header persona={persona} onPersona={setPersona} meta={meta} />
 
       {loading ? (
-        <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex h-[60vh] flex-col items-center justify-center gap-3">
+          <svg width="38" height="38" viewBox="0 0 32 32" className="animate-spin [animation-duration:3s]" aria-hidden="true">
+            <circle cx="16" cy="16" r="13" fill="none" stroke="#4F8EF7" strokeWidth="2.5" strokeDasharray="58 24" strokeLinecap="round" />
+            <circle cx="16" cy="16" r="7.5" fill="none" stroke="#8FA3C0" strokeWidth="1.5" strokeDasharray="30 17" strokeLinecap="round" />
+            <circle cx="16" cy="16" r="2.4" fill="#34D399" />
+          </svg>
           <p className="animate-pulse text-sm text-mist-dim">
             running deterministic pipeline &amp; fetching data…
           </p>

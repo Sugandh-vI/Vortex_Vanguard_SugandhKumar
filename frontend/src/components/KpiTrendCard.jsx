@@ -164,7 +164,7 @@ export default function KpiTrendCard({ kpi, series, blocked }) {
 
   if (blocked) {
     return (
-      <div className="rounded-xl border border-line bg-ink-900 p-4">
+      <div className="rounded-xl border border-line bg-ink-900 p-4 transition-colors hover:border-accent/40">
         <div className="mb-3 flex items-baseline justify-between">
           <h3 className="text-sm font-semibold text-mist-bright">{kpi}</h3>
           <span className="text-[10px] uppercase tracking-wider text-mist-dim">{series.grain}</span>
@@ -183,7 +183,7 @@ export default function KpiTrendCard({ kpi, series, blocked }) {
   const higherIsBetter = kpi !== "Customer Churn Rate";
 
   return (
-    <div className="rounded-xl border border-line bg-ink-900 p-4">
+    <div className="rounded-xl border border-line bg-ink-900 p-4 transition-colors hover:border-accent/40">
       <div className="flex items-baseline justify-between gap-2">
         <h3 className="text-sm font-semibold text-mist-bright">{kpi}</h3>
         <span className="text-[10px] uppercase tracking-wider text-mist-dim">

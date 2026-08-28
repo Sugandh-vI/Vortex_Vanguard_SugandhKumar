@@ -32,14 +32,16 @@ export default function InsightFeed({
 
   return (
     <div className="rounded-xl border border-line bg-ink-900 p-4">
-      <div className="mb-3 flex items-baseline gap-2">
-        <h2 className="text-sm font-semibold text-mist-bright">Insight feed</h2>
-        <span className="num text-[11px] text-mist-dim">
-          {insights.length} insight{insights.length === 1 ? "" : "s"} · {persona}
-        </span>
-        <span className="ml-auto text-[10px] text-mist-dim">
+      <div className="mb-3">
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-sm font-semibold text-mist-bright">Insight feed</h2>
+          <span className="num text-[11px] text-mist-dim">
+            {insights.length} insights · {persona}
+          </span>
+        </div>
+        <p className="mt-0.5 text-[10px] text-mist-dim">
           ranked by confidence × feedback factor · abstains last
-        </span>
+        </p>
       </div>
       {voteError && (
         <div className="mb-2 rounded-md border border-blocked/30 bg-blocked/[0.06] px-3 py-1.5 text-[11px] text-blocked">
