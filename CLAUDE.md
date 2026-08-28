@@ -728,3 +728,35 @@ This log is how we track project state across sessions, so keep entries factual 
 ### Next phase (pending confirmation)
 - Phase 10 — Telemetry (wrap the LLM call and analytics pipeline; record latency, token usage from LLM response metadata, and estimated cost-at-scale; expose via API endpoint and show in the UI)
 
+---
+
+## Iteration Log — Phase 10 (Telemetry) — 2026-08-28
+
+### What was done
+- Built `backend/engine/telemetry.py` (placeholder → full module) — deterministic instrumentation wrapping existing modules; **no engine module modified, no LLM involved in the measurement itself**:
+  - **`TelemetryCollector`** (in-memory, thread-safe, JSON-safe `snapshot()`; opt-in JSONL append for run-to-run persistence; bounded 200-event ring for timeline/debug):
+    - Stage timing: `stage(name)` context manager + `record_stage(name, ms)` → per-stage count/total/avg/min/max.
+    - LLM call recording: `record_llm_call(response, persona, grounded, violations, prompt_chars)` consumes the normalized `LLMResponse` verbatim — provider, model, latency, token counts from `response.usage` (model response metadata), truncation/`done_reason` from `meta`, grounding pass/fail + violation count; per-persona and per-model breakdowns.
+    - `narrate(client, facts, persona)` — one-step timed prompt → call → grounding check → record (Phase 12 endpoints will call this).
+    - `record_pipeline(total_ms, stages)` + **`instrument_pipeline(collector, …)`** — times all 5 deterministic stages (detection → reconciliation → decomposition → confidence → actions) by calling the SAME entry points the uninstrumented pipeline uses (output parity verified in tests).
+  - **Cost model (honest by construction):** per-call `estimated_cost_usd` = tokens × rate, rates configurable via `TELEMETRY_INPUT_RATE_1M` / `TELEMETRY_OUTPUT_RATE_1M` (default `0.0` → `pricing: free_tier`, cost $0.00 — the truth for Ollama's free tier). `project_cost_at_scale(calls)` = average token usage of recorded REAL calls × configured rates (returns `None` + explanatory note when no real calls exist). **Mock usage is counted separately (`mock_tokens`) and never enters real token totals or cost** — consistent with Phase 8's `mock_estimate` labeling.
+  - **`GET /telemetry`** endpoint added to `backend/api/main.py` (returns the default collector's snapshot — explicitly part of the Phase 10 spec). Full insight/narration endpoints remain Phase 12; the UI panel is Phase 11.
+  - Documented the two rate env vars in `.env.example`.
+- Committed `backend/test_telemetry.py` (standalone, no real LLM): stage timing + aggregates; real-shaped `LLMResponse` recording (tokens verbatim, free-tier cost); mock recording (separate counters, excluded from real tokens/cost); cost math at custom rates + at-scale projection (1M+1M tokens @ $2/$3 → $5.00/call → $5,000 @ 1,000 calls); truncation + grounding-fail counters; `instrument_pipeline` on the real dataset (5 stages timed, output parity 24 anomalies / 27 confidence / 78 recommendations vs uninstrumented); `narrate()` end-to-end via MockProvider (grounded + recorded); `GET /telemetry` via FastAPI TestClient (200, shape, JSON-safe); opt-in JSONL; JSON sweep. **All pass.**
+- Verified a live sample snapshot on the real dataset: pipeline total 643.8 ms (detection 37.8 / reconciliation 21.8 / decomposition 569.1 / confidence 0.6 / actions 14.4), one mock narration recorded with `mock_tokens` 3,149 prompt + 109 completion, grounding 1/1 passed, `pricing: free_tier`.
+- Bugs found & fixed during testing: (a) **re-entrant deadlock** — `snapshot()` held the non-re-entrant `threading.Lock` while calling `project_cost_at_scale()`, which re-acquires it → the first `snapshot()` call hung forever; fixed by switching to `threading.RLock` (commented at the lock). (b) Test-side rounding artifact in the avg_ms assertion (1dp rounding) — fixed with a tolerance.
+
+### Key decisions made
+- **Wrap, don't patch:** `instrument_pipeline()` calls the same entry points (`run_detection` / `reconcile` / `decompose_all` / `score_all` / `recommend_all`) the uninstrumented pipeline uses, so engine code stays untouched and parity is testable; the `stage()` context manager is available for Phase 12 endpoints.
+- **Tokens come only from response metadata** (`source=llm_response_metadata`); mock estimates are counted separately and never billed — the brief's "visible LLM vs non-LLM breakdown" is served by the snapshot's `real_calls` / `mock_calls` split plus `usage_sources`.
+- **Cost is free-tier by default, with an at-scale knob:** default $0 rates report `free_tier`; hypothetical paid rates via env show what the same recorded volume would cost — the "estimated cost-at-scale" the brief asks for, without inventing a cost where there is none.
+- **In-memory + opt-in JSONL rather than SQLite:** telemetry is high-volume/ephemeral per process (unlike the auditable access/feedback logs); JSONL keeps persistence cheap when it's wanted.
+- **Scale projection bases itself on real-call averages only** (no real calls → `None` + note), so the figure is never derived from mock estimates.
+
+### What remains
+- Phase 10 is fully complete per Section 8 (LLM call and analytics pipeline wrapped; latency + token usage from response metadata + estimated cost-at-scale recorded; exposed via API endpoint). No open issues.
+- Phase 11 UI: the telemetry panel renders the snapshot. Phase 12: pipeline/narration endpoints will call `instrument_pipeline()` / `collector.narrate()` on the default collector so the panel is populated end-to-end.
+
+### Next phase (pending confirmation)
+- Phase 11 — Frontend Dashboard (KPI trend charts, insight feed with confidence badges, persona switcher, LLM-vs-non-LLM indicator per card, access-blocked state, telemetry panel)
+
