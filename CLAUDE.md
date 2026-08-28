@@ -680,3 +680,51 @@ This log is how we track project state across sessions, so keep entries factual 
 ### Next phase (pending confirmation)
 - Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
 
+---
+
+## Iteration Log — Phase 8 Confirmed (Real Ollama 6/6) — 2026-08-28
+
+### What was done
+- Phase 8 confirmed against the real model: user ran `backend/test_real_narration.py` locally against a live `ollama serve` + `minimax-m3:cloud` — **all 6 runs PASSED** (Revenue @ 2024-05-13, Gross Margin % @ 2024-05-13, Customer Churn Rate @ 2024-06 × CFO + Category Manager). Every narrative was non-empty, `done_reason=stop` (no truncation), zero grounding violations, and every run confirmed `provider=ollama` / `mock=false` / usage `source=llm_response_metadata`.
+- Observed real-model metadata: thinking present in all runs (847–10,423 chars), `eval_count` 742–2,822 (well under the 4096 cap — the token-budget fix holds on the live model), latency 13.5–44.9 s, prompt tokens 2,685–3,543, completion tokens 742–2,822.
+- Persona differentiation confirmed genuine (not template-following): CFO leads with dollar-impact bottom line and decision frame; Category Manager leads with operational triage, sequencing, and category-team next steps. The abstain case (June churn) correctly rendered as abstain in both personas, cleared only the Data Quality & Pipeline lever as actionable, and named the 90% completeness gate.
+
+### Key decisions made
+- None new — Phase 8 implementation unchanged.
+
+### What remains
+- Phase 8 is fully confirmed. No open issues.
+
+### Next phase (pending confirmation)
+- Phase 9 — Feedback Loop (thumbs up/down capture per insight, SQLite log, and an explanation of how it would feed confidence weighting over time)
+
+---
+
+## Iteration Log — Phase 9 (Feedback Loop) — 2026-08-28
+
+### What was done
+- Built `backend/engine/feedback.py` (placeholder → full module) — deterministic, no LLM, **no existing module modified**:
+  - **`insight_id()`** — deterministic, human-readable insight reference: `"Revenue|2024-05-13"` (aggregate) / `"Revenue|2024-06-29|Sports & Outdoors"` (per-category sparse flag). An insight is exactly the unit Phase 8 narrates — the `(kpi_name, period, category)` triple that `ConfidenceResult` / `ActionPlan.get_set()` / the narration harness already key on.
+  - **`FeedbackRecord`** dataclass (JSON-safe).
+  - **`FeedbackStore`** — SQLite at `backend/data/raw/feedback.db` (gitignored via `*.db`), table `insight_feedback`: `id, timestamp (ISO-8601 UTC), insight_id, kpi_name, period, category, persona, rating ('up'|'down' + CHECK constraint), note (optional), confidence_status, confidence_score` + index on `(insight_id, persona)`. Writes are fail-closed: unknown persona (union of contract `persona_access`), unknown KPI, period format vs KPI grain (daily `YYYY-MM-DD` / monthly `YYYY-MM`), invalid confidence status, and insight_id consistency — a caller-supplied id that doesn't match the derived one is rejected as a stale reference; the stored id is always the derived one, so tie-back is guaranteed by construction. `record()` → row id; `fetch(limit, insight_id, kpi_name, period, persona, rating, confidence_status, category)` newest-first plain dicts; `summary()` → per-insight vote counts + agreement rate, and the per-(KPI × confidence level × persona) up-rate table with computed feedback factors.
+  - **`attach_feedback_context(confidence_result, persona)`** — tie-back helper: builds the ready-to-record payload straight from Phase 5 pipeline output (works for anomalies and sparse-history flags alike), so a click maps to exactly the insight + persona + displayed confidence badge.
+  - **`feedback_factor()` / `adjusted_score()`** — pure, tested functions implementing the weighting design (see decisions): factor = 2 × Beta(1,1) posterior mean of the up-rate, clamped to [0.5, 1.5], zero votes → exactly 1.0; adjusted score = clamp(base × factor, 0, 100). **Not wired into any existing module** — applying it to feed ordering is Phase 12's job.
+- Committed `backend/test_feedback.py` (standalone regression tests, no LLM, temp DB only): insight_id derivation; record/fetch round-trip + filters + newest-first; persistence across store reopens; 7 fail-closed negative cases (invalid rating, unknown persona, unknown KPI, insight_id mismatch, daily date on monthly KPI, month string on daily KPI, invalid confidence status — verified no partial writes); tie-back from a real anomaly + a sparse flag; factor/adjusted-score math; summary aggregation incl. abstain exclusion; JSON-serializability sweep. **All pass.**
+- Verified against the real Phase 5 pipeline (all 4 demo scenarios): Revenue@2024-05-13 (medium / 72.7), Gross Margin %@2024-05-13 (high / 100.0), June churn (abstain / score None), Sports & Outdoors flag (abstain / score None) — all tie back with exactly the status and score the UI would display; abstain votes are recorded but excluded from factor computation.
+- Working demo of the weighting design: Revenue|medium — CFO 1 up → factor 1.333 (72.7 → 96.9), Category Manager 2 downs → factor 0.5 (72.7 → 36.4), no-vote baseline → factor 1.0 (72.7 unchanged).
+
+### Key decisions made
+- **Insight key = (kpi_name, period, category)** — the unit narration renders. The same insight shown to two personas is two narratives, so votes are stored per (insight_id, persona): same `insight_id`, separate rows.
+- **Feedback is a trust label on (insight, persona), never evidence:** it never mutates stored numbers and never mutates the Phase 5 evidence-based confidence — the status stays the deterministic prior and abstain stays abstain (user opinion cannot repair broken evidence; votes ON abstains are still recorded, to measure whether abstention matched expectations).
+- **Weighting design — two consumption points, no retraining:** (a) feed ranking: `effective_rank = Phase 5 score × feedback_factor`, factor = 2 × Beta(1,1) posterior mean of the (KPI, level, persona) up-rate, clamped to [0.5, 1.5]; zero votes → exactly 1.0 so no-feedback behavior is bit-identical to pre-Phase 9; the Beta(1,1) prior shrinks single votes so one vote cannot move a ranking much. (b) calibration signal: the per-(KPI × level × persona) up-rate table (via `summary()`) — systematic down-votes on a level for a KPI point at that KPI's contract parameters (attribution weights / thresholds) for human review, i.e. an editable YAML change, not model retraining.
+- **Persona-scoped:** a Category Manager down-vote adjusts the Category Manager's view only (the personas see different narratives of the same insight).
+- **DB location** `backend/data/raw/feedback.db` — mirrors the `access_log.db` convention (stdlib `sqlite3`, gitignored via `backend/data/raw/*.db`).
+- **No API endpoints added** — consistent with Phases 6/7, where API/UI wiring was deferred to Phase 12; the store + context helper + factor functions are all ready to consume.
+
+### What remains
+- Phase 9 is fully complete per Section 8 (thumbs up/down capture per insight, SQLite log, and a documented mechanism for how feedback feeds confidence weighting over time). No open issues.
+- Phase 12 wiring: POST/GET feedback endpoints + UI thumbs buttons + applying `feedback_factor` to feed ordering.
+
+### Next phase (pending confirmation)
+- Phase 10 — Telemetry (wrap the LLM call and analytics pipeline; record latency, token usage from LLM response metadata, and estimated cost-at-scale; expose via API endpoint and show in the UI)
+
