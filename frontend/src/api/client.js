@@ -53,6 +53,35 @@ export async function loadInsights(persona) {
   }
 }
 
+// Phase 12: feedback. POST returns the recorded vote + updated feedback
+// block; on success the caller re-fetches the feed (the server rebuild is
+// pure re-ranking — zero extra LLM calls).
+export async function postFeedback({ insight_id, persona, rating }) {
+  const res = await fetch("/api/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ insight_id, persona, rating }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.detail || `HTTP ${res.status}`);
+    err.detail = data.detail;
+    throw err;
+  }
+  return data;
+}
+
+export async function loadFeedbackSummary(persona) {
+  try {
+    const data = await tryLive(
+      `/api/feedback/summary${persona ? `?persona=${encodeURIComponent(persona)}` : ""}`
+    );
+    return { data, live: true };
+  } catch {
+    return { data: null, live: false };
+  }
+}
+
 export async function loadTelemetry() {
   try {
     const data = await tryLive("/telemetry");

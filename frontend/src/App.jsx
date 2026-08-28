@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Header from "./components/Header";
 import KpiTrendCard from "./components/KpiTrendCard";
 import InsightFeed from "./components/InsightFeed";
 import TelemetryPanel from "./components/TelemetryPanel";
-import { loadMeta, loadTimeseries, loadInsights, loadTelemetry } from "./api/client";
+import DemoScenarios from "./components/DemoScenarios";
+import {
+  loadMeta,
+  loadTimeseries,
+  loadInsights,
+  loadTelemetry,
+  postFeedback,
+} from "./api/client";
 
 const KPI_ORDER = ["Revenue", "Units Sold", "Gross Margin %", "Customer Churn Rate"];
 
@@ -30,10 +37,15 @@ export default function App() {
   const [telemetry, setTelemetry] = useState(null);
   const [live, setLive] = useState({ insights: null, telemetry: null });
   const [loading, setLoading] = useState(true);
+  const [lastVotes, setLastVotes] = useState({});
+  const [voting, setVoting] = useState(false);
+  const [voteError, setVoteError] = useState(null);
 
   useEffect(() => {
     let active = true;
     setInsights(null);
+    setLastVotes({});
+    setVoteError(null);
     (async () => {
       const [m, t, i, tel] = await Promise.all([
         loadMeta(),
@@ -53,6 +65,36 @@ export default function App() {
       active = false;
     };
   }, [persona]);
+
+  // Phase 12: a vote is recorded server-side (confidence context derived
+  // there), then the feed is re-fetched — the server rebuild is pure
+  // re-ranking, zero extra LLM calls.
+  const handleVote = useCallback(
+    async (insight, rating) => {
+      if (voting) return;
+      setVoting(true);
+      setVoteError(null);
+      try {
+        await postFeedback({
+          insight_id: insight.insight_id,
+          persona,
+          rating,
+        });
+        setLastVotes((v) => ({ ...v, [insight.insight_id]: rating }));
+        const { data, live: isLive } = await loadInsights(persona);
+        setInsights(data);
+        setLive((l) => ({ ...l, insights: isLive }));
+      } catch (e) {
+        setVoteError(
+          "Feedback unavailable (backend offline)" +
+            (e.detail ? ` — ${e.detail}` : "")
+        );
+      } finally {
+        setVoting(false);
+      }
+    },
+    [persona, voting]
+  );
 
   const blockedByKpi =
     insights?.blocked?.reduce((acc, b) => ({ ...acc, [b.kpi_name]: b }), {}) || {};
@@ -88,6 +130,10 @@ export default function App() {
                 insights={insights.insights}
                 blocked={insights.blocked}
                 persona={persona}
+                lastVotes={lastVotes}
+                onVote={handleVote}
+                voting={voting}
+                voteError={voteError}
               />
             ) : (
               <div className="rounded-xl border border-line bg-ink-900 p-4">
@@ -99,6 +145,11 @@ export default function App() {
           {/* telemetry */}
           <section className="col-span-12">
             <TelemetryPanel data={telemetry} live={live.telemetry} />
+          </section>
+
+          {/* demo guide */}
+          <section className="col-span-12">
+            <DemoScenarios />
           </section>
 
           {/* data provenance footer */}

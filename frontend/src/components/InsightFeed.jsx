@@ -18,7 +18,15 @@ const KPI_DELTA_UNITS = {
 
 const VISIBLE_BY_DEFAULT = 6;
 
-export default function InsightFeed({ insights = [], blocked = [], persona }) {
+export default function InsightFeed({
+  insights = [],
+  blocked = [],
+  persona,
+  lastVotes = {},
+  onVote,
+  voting,
+  voteError,
+}) {
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? insights : insights.slice(0, VISIBLE_BY_DEFAULT);
 
@@ -29,8 +37,15 @@ export default function InsightFeed({ insights = [], blocked = [], persona }) {
         <span className="num text-[11px] text-mist-dim">
           {insights.length} insight{insights.length === 1 ? "" : "s"} · {persona}
         </span>
-        <span className="ml-auto text-[10px] text-mist-dim">priority order (|z| severity)</span>
+        <span className="ml-auto text-[10px] text-mist-dim">
+          ranked by confidence × feedback factor · abstains last
+        </span>
       </div>
+      {voteError && (
+        <div className="mb-2 rounded-md border border-blocked/30 bg-blocked/[0.06] px-3 py-1.5 text-[11px] text-blocked">
+          {voteError}
+        </div>
+      )}
 
       {blocked.length > 0 && (
         <div className="mb-3 space-y-2">
@@ -50,6 +65,9 @@ export default function InsightFeed({ insights = [], blocked = [], persona }) {
             insight={i}
             unit={KPI_LEVEL_UNITS[i.kpi_name] || "percent"}
             deltaUnit={KPI_DELTA_UNITS[i.kpi_name]}
+            lastVote={lastVotes[i.insight_id]}
+            onVote={onVote}
+            voting={voting}
           />
         ))}
       </div>

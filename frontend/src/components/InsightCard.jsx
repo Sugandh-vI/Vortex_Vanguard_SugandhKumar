@@ -58,6 +58,49 @@ function DriverRow({ d, unit }) {
   );
 }
 
+function ThumbIcon({ up }) {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {up ? (
+        <path d="M7 10v11M2 13v6a2 2 0 0 0 2 2h13.5a1.5 1.5 0 0 0 1.4-1l2-7a1.5 1.5 0 0 0-1.45-2H14l1-4.34A2 2 0 0 0 13.1 3L7 10" />
+      ) : (
+        <path d="M17 14V3M22 11V5a2 2 0 0 0-2-2H6.5a1.5 1.5 0 0 0-1.4 1l-2 7a1.5 1.5 0 0 0 1.45 2H10l-1 4.34A2 2 0 0 0 9.9 21L17 14" />
+      )}
+    </svg>
+  );
+}
+
+function VoteButtons({ insight, lastVote, onVote, voting }) {
+  const fb = insight.feedback;
+  if (!fb) return null;
+  const abstain = fb.excluded_from_factor;
+  const base = "flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] transition-colors disabled:opacity-50";
+  return (
+    <div className="flex items-center gap-1 rounded-md border border-line bg-ink-850 p-0.5">
+      <button
+        onClick={() => onVote && onVote("up")}
+        disabled={voting}
+        title={abstain
+          ? "Recorded for calibration — abstain insights are excluded from ranking factors"
+          : "This insight was useful for me"}
+        className={base + (lastVote === "up" ? " bg-conf-high/15 text-conf-high" : " text-mist-dim hover:text-mist-bright")}
+      >
+        <ThumbIcon up /> <span className="num">{fb.up}</span>
+      </button>
+      <button
+        onClick={() => onVote && onVote("down")}
+        disabled={voting}
+        title={abstain
+          ? "Recorded for calibration — abstain insights are excluded from ranking factors"
+          : "This insight was not useful for me"}
+        className={base + (lastVote === "down" ? " bg-conf-low/15 text-conf-low" : " text-mist-dim hover:text-mist-bright")}
+      >
+        <ThumbIcon up={false} /> <span className="num">{fb.down}</span>
+      </button>
+    </div>
+  );
+}
+
 function Recommendation({ rec, unit }) {
   const impact = rec.expected_impact;
   const hasImpact =
@@ -101,7 +144,7 @@ function Recommendation({ rec, unit }) {
   );
 }
 
-export default function InsightCard({ insight, unit, deltaUnit }) {
+export default function InsightCard({ insight, unit, deltaUnit, lastVote, onVote, voting }) {
   const [showAllNarrative, setShowAllNarrative] = useState(false);
   const [showAllRecs, setShowAllRecs] = useState(false);
   const c = insight.confidence;
@@ -123,7 +166,27 @@ export default function InsightCard({ insight, unit, deltaUnit }) {
           <span className="rounded bg-ink-700 px-1.5 py-0.5 text-[10px] text-mist">{insight.category}</span>
         )}
         <span className="num text-[11px] text-mist-dim">{insight.period}</span>
-        <span className="ml-auto">
+        <span className="ml-auto flex items-center gap-1.5">
+          {insight.feedback?.feedback_factor != null &&
+            insight.feedback.feedback_factor !== 1.0 && (
+              <span
+                title="Phase 9 feedback factor (per KPI × confidence level × persona) — a trust label, never evidence"
+                className={
+                  "num rounded border px-1.5 py-0.5 text-[10px] font-medium " +
+                  (insight.feedback.feedback_factor > 1
+                    ? "border-conf-high/30 bg-conf-high/10 text-conf-high"
+                    : "border-conf-low/30 bg-conf-low/10 text-conf-low")
+                }
+              >
+                ×{insight.feedback.feedback_factor}
+              </span>
+            )}
+          <VoteButtons
+            insight={insight}
+            lastVote={lastVote}
+            onVote={onVote ? (rating) => onVote(insight, rating) : undefined}
+            voting={voting}
+          />
           <ConfidenceBadge status={c.status} score={c.score} />
         </span>
       </div>

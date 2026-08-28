@@ -38,11 +38,14 @@ export default function TelemetryPanel({ data, live }) {
   const llm = data.llm || {};
   const cost = data.cost_at_scale || {};
   const lp = data.last_pipeline || {};
+  const tokens = llm.tokens || {};
+  const mockTokens = llm.mock_tokens || {};
+  const grounding = llm.grounding || {};
   const maxMs = Math.max(1, ...Object.values(stages).map((s) => s.total_ms));
 
-  const grounding =
-    llm.grounding_checked > 0
-      ? `${llm.grounding_passed}/${llm.grounding_checked}`
+  const groundingLabel =
+    grounding.checked > 0
+      ? `${grounding.passed}/${grounding.checked}${grounding.failed > 0 ? ` · ${grounding.failed} failed` : ""}`
       : "n/a";
 
   return (
@@ -61,7 +64,7 @@ export default function TelemetryPanel({ data, live }) {
         </span>
         {lp.total_ms != null && (
           <span className="num text-[10px] text-mist-dim">
-            last pipeline: {fmtMs(lp.total_ms)} · {lp.anomalies ?? "—"} anomalies
+            last pipeline: {fmtMs(lp.total_ms)}
           </span>
         )}
       </div>
@@ -94,15 +97,15 @@ export default function TelemetryPanel({ data, live }) {
               {llm.mock_calls ?? 0} mock{llm.calls > 0 ? ` · ${llm.calls - (llm.mock_calls ?? 0)} real` : " (no real model calls)"}
             </span>
           </div>
-          <Row label="Prompt tokens (real)" value={fmtTokens(llm.prompt_tokens)} />
-          <Row label="Completion tokens (real)" value={fmtTokens(llm.completion_tokens)} />
-          <Row label="Total tokens (real)" value={fmtTokens(llm.total_tokens)} />
+          <Row label="Prompt tokens (real)" value={fmtTokens(tokens.prompt)} />
+          <Row label="Completion tokens (real)" value={fmtTokens(tokens.completion)} />
+          <Row label="Total tokens (real)" value={fmtTokens(tokens.total)} />
           <Row
             label="Mock tokens (labeled, never billed)"
-            value={`${fmtTokens(llm.mock_tokens?.prompt)}/${fmtTokens(llm.mock_tokens?.completion)}`}
+            value={`${fmtTokens(mockTokens.prompt)}/${fmtTokens(mockTokens.completion)}`}
           />
-          <Row label="Avg call latency" value={llm.avg_call_ms != null ? fmtMs(llm.avg_call_ms) : "—"} />
-          <Row label="Grounding checks passed" value={grounding} />
+          <Row label="Avg call latency" value={llm.avg_latency_ms != null ? fmtMs(llm.avg_latency_ms) : "—"} />
+          <Row label="Grounding checks passed" value={groundingLabel} />
           <Row label="Truncated responses" value={llm.truncated ?? 0} />
         </div>
 
@@ -113,7 +116,7 @@ export default function TelemetryPanel({ data, live }) {
           </p>
           <div className="mb-2 flex items-baseline gap-2">
             <span className="num text-2xl font-semibold text-slate-100">
-              {cost.estimated_cost_usd != null ? money(cost.estimated_cost_usd, 4) : "$0.0000"}
+              {money(llm.estimated_cost_usd ?? 0, 4)}
             </span>
             <span className="rounded border border-line bg-ink-850 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-mist-dim">
               {cost.pricing}

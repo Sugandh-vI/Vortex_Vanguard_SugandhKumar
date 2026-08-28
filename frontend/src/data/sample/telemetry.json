@@ -1,59 +1,59 @@
 {
-  "generated_at": "2026-08-28T18:05:47.998823+00:00",
-  "collector_created_at": "2026-08-28T18:05:47.318971+00:00",
+  "generated_at": "2026-08-28T18:28:37.974180+00:00",
+  "collector_created_at": "2026-08-28T18:28:37.357973+00:00",
   "stages": {
     "detection": {
       "count": 1,
-      "total_ms": 36.1,
-      "avg_ms": 36.1,
-      "min_ms": 36.1,
-      "max_ms": 36.1
+      "total_ms": 33.9,
+      "avg_ms": 33.9,
+      "min_ms": 33.9,
+      "max_ms": 33.9
     },
     "reconciliation": {
       "count": 1,
-      "total_ms": 20.1,
-      "avg_ms": 20.1,
-      "min_ms": 20.1,
-      "max_ms": 20.1
+      "total_ms": 19.4,
+      "avg_ms": 19.4,
+      "min_ms": 19.4,
+      "max_ms": 19.4
     },
     "decomposition": {
       "count": 1,
-      "total_ms": 555.1,
-      "avg_ms": 555.1,
-      "min_ms": 555.1,
-      "max_ms": 555.1
+      "total_ms": 504.2,
+      "avg_ms": 504.2,
+      "min_ms": 504.2,
+      "max_ms": 504.2
     },
     "confidence": {
       "count": 1,
-      "total_ms": 0.7,
-      "avg_ms": 0.7,
-      "min_ms": 0.7,
-      "max_ms": 0.7
+      "total_ms": 0.5,
+      "avg_ms": 0.5,
+      "min_ms": 0.5,
+      "max_ms": 0.5
     },
     "actions": {
       "count": 1,
-      "total_ms": 18.6,
-      "avg_ms": 18.6,
-      "min_ms": 18.6,
-      "max_ms": 18.6
+      "total_ms": 12.8,
+      "avg_ms": 12.8,
+      "min_ms": 12.8,
+      "max_ms": 12.8
     }
   },
   "last_pipeline": {
-    "ts": "2026-08-28T18:05:47.954304+00:00",
-    "total_ms": 630.6,
+    "ts": "2026-08-28T18:28:37.932911+00:00",
+    "total_ms": 570.9,
     "stages": {
-      "detection": 36.1,
-      "reconciliation": 20.1,
-      "decomposition": 555.1,
-      "confidence": 0.7,
-      "actions": 18.6
+      "detection": 33.9,
+      "reconciliation": 19.4,
+      "decomposition": 504.2,
+      "confidence": 0.5,
+      "actions": 12.8
     }
   },
   "llm": {
     "calls": 49,
     "real_calls": 0,
     "mock_calls": 49,
-    "total_latency_ms": 2.4,
+    "total_latency_ms": 2.1,
     "avg_latency_ms": 0.0,
     "min_latency_ms": 0.0,
     "max_latency_ms": 0.1,
@@ -82,13 +82,13 @@
       "CFO": {
         "calls": 27,
         "real_tokens": 0,
-        "total_latency_ms": 0.7,
+        "total_latency_ms": 1.0,
         "avg_latency_ms": 0.0
       },
       "Category Manager": {
         "calls": 22,
         "real_tokens": 0,
-        "total_latency_ms": 1.7,
+        "total_latency_ms": 1.1,
         "avg_latency_ms": 0.1
       }
     },
@@ -107,37 +107,37 @@
   },
   "events": [
     {
-      "ts": "2026-08-28T18:05:47.359751+00:00",
+      "ts": "2026-08-28T18:28:37.395938+00:00",
       "type": "stage",
       "name": "detection",
-      "latency_ms": 36.1
+      "latency_ms": 33.9
     },
     {
-      "ts": "2026-08-28T18:05:47.379845+00:00",
+      "ts": "2026-08-28T18:28:37.415391+00:00",
       "type": "stage",
       "name": "reconciliation",
-      "latency_ms": 20.1
+      "latency_ms": 19.4
     },
     {
-      "ts": "2026-08-28T18:05:47.935011+00:00",
+      "ts": "2026-08-28T18:28:37.919583+00:00",
       "type": "stage",
       "name": "decomposition",
-      "latency_ms": 555.1
+      "latency_ms": 504.2
     },
     {
-      "ts": "2026-08-28T18:05:47.935714+00:00",
+      "ts": "2026-08-28T18:28:37.920131+00:00",
       "type": "stage",
       "name": "confidence",
-      "latency_ms": 0.7
+      "latency_ms": 0.5
     },
     {
-      "ts": "2026-08-28T18:05:47.954285+00:00",
+      "ts": "2026-08-28T18:28:37.932898+00:00",
       "type": "stage",
       "name": "actions",
-      "latency_ms": 18.6
+      "latency_ms": 12.8
     },
     {
-      "ts": "2026-08-28T18:05:47.969688+00:00",
+      "ts": "2026-08-28T18:28:37.946507+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -158,7 +158,7 @@
       "prompt_chars": 9438
     },
     {
-      "ts": "2026-08-28T18:05:47.970114+00:00",
+      "ts": "2026-08-28T18:28:37.946987+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -179,7 +179,7 @@
       "prompt_chars": 12597
     },
     {
-      "ts": "2026-08-28T18:05:47.970486+00:00",
+      "ts": "2026-08-28T18:28:37.947436+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -200,7 +200,7 @@
       "prompt_chars": 12601
     },
     {
-      "ts": "2026-08-28T18:05:47.970842+00:00",
+      "ts": "2026-08-28T18:28:37.947815+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -221,7 +221,7 @@
       "prompt_chars": 12597
     },
     {
-      "ts": "2026-08-28T18:05:47.971157+00:00",
+      "ts": "2026-08-28T18:28:37.948140+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -242,7 +242,7 @@
       "prompt_chars": 9758
     },
     {
-      "ts": "2026-08-28T18:05:47.971502+00:00",
+      "ts": "2026-08-28T18:28:37.948498+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -263,7 +263,7 @@
       "prompt_chars": 12599
     },
     {
-      "ts": "2026-08-28T18:05:47.971827+00:00",
+      "ts": "2026-08-28T18:28:37.948822+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -284,7 +284,7 @@
       "prompt_chars": 11298
     },
     {
-      "ts": "2026-08-28T18:05:47.972360+00:00",
+      "ts": "2026-08-28T18:28:37.949356+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -305,7 +305,7 @@
       "prompt_chars": 16114
     },
     {
-      "ts": "2026-08-28T18:05:47.972641+00:00",
+      "ts": "2026-08-28T18:28:37.949644+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -326,7 +326,7 @@
       "prompt_chars": 9621
     },
     {
-      "ts": "2026-08-28T18:05:47.973021+00:00",
+      "ts": "2026-08-28T18:28:37.950036+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -347,7 +347,7 @@
       "prompt_chars": 13611
     },
     {
-      "ts": "2026-08-28T18:05:47.973308+00:00",
+      "ts": "2026-08-28T18:28:37.950313+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -368,7 +368,7 @@
       "prompt_chars": 9440
     },
     {
-      "ts": "2026-08-28T18:05:47.973832+00:00",
+      "ts": "2026-08-28T18:28:37.950840+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -389,7 +389,7 @@
       "prompt_chars": 16108
     },
     {
-      "ts": "2026-08-28T18:05:47.974240+00:00",
+      "ts": "2026-08-28T18:28:37.951266+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -410,13 +410,13 @@
       "prompt_chars": 13995
     },
     {
-      "ts": "2026-08-28T18:05:47.974615+00:00",
+      "ts": "2026-08-28T18:28:37.951665+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "CFO",
       "mock": true,
-      "latency_ms": 0.0,
+      "latency_ms": 0.1,
       "tokens": {
         "prompt": 3401,
         "completion": 109,
@@ -431,7 +431,7 @@
       "prompt_chars": 13605
     },
     {
-      "ts": "2026-08-28T18:05:47.974934+00:00",
+      "ts": "2026-08-28T18:28:37.952026+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -452,7 +452,7 @@
       "prompt_chars": 11402
     },
     {
-      "ts": "2026-08-28T18:05:47.975263+00:00",
+      "ts": "2026-08-28T18:28:37.952353+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -473,7 +473,7 @@
       "prompt_chars": 11300
     },
     {
-      "ts": "2026-08-28T18:05:47.975532+00:00",
+      "ts": "2026-08-28T18:28:37.952618+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -494,7 +494,7 @@
       "prompt_chars": 9582
     },
     {
-      "ts": "2026-08-28T18:05:47.975805+00:00",
+      "ts": "2026-08-28T18:28:37.952887+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -515,13 +515,13 @@
       "prompt_chars": 9436
     },
     {
-      "ts": "2026-08-28T18:05:47.976158+00:00",
+      "ts": "2026-08-28T18:28:37.953248+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "CFO",
       "mock": true,
-      "latency_ms": 0.0,
+      "latency_ms": 0.1,
       "tokens": {
         "prompt": 2826,
         "completion": 95,
@@ -536,7 +536,7 @@
       "prompt_chars": 11304
     },
     {
-      "ts": "2026-08-28T18:05:47.976545+00:00",
+      "ts": "2026-08-28T18:28:37.953640+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -557,13 +557,13 @@
       "prompt_chars": 13975
     },
     {
-      "ts": "2026-08-28T18:05:47.976925+00:00",
+      "ts": "2026-08-28T18:28:37.954126+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "CFO",
       "mock": true,
-      "latency_ms": 0.0,
+      "latency_ms": 0.1,
       "tokens": {
         "prompt": 3493,
         "completion": 110,
@@ -578,7 +578,7 @@
       "prompt_chars": 13973
     },
     {
-      "ts": "2026-08-28T18:05:47.977313+00:00",
+      "ts": "2026-08-28T18:28:37.954515+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -599,7 +599,7 @@
       "prompt_chars": 13979
     },
     {
-      "ts": "2026-08-28T18:05:47.977681+00:00",
+      "ts": "2026-08-28T18:28:37.954896+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -620,7 +620,7 @@
       "prompt_chars": 13991
     },
     {
-      "ts": "2026-08-28T18:05:47.978061+00:00",
+      "ts": "2026-08-28T18:28:37.955345+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -641,7 +641,7 @@
       "prompt_chars": 14308
     },
     {
-      "ts": "2026-08-28T18:05:47.978201+00:00",
+      "ts": "2026-08-28T18:28:37.955478+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -662,7 +662,7 @@
       "prompt_chars": 4437
     },
     {
-      "ts": "2026-08-28T18:05:47.978312+00:00",
+      "ts": "2026-08-28T18:28:37.955593+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -683,7 +683,7 @@
       "prompt_chars": 4443
     },
     {
-      "ts": "2026-08-28T18:05:47.978418+00:00",
+      "ts": "2026-08-28T18:28:37.955701+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -704,7 +704,7 @@
       "prompt_chars": 4451
     },
     {
-      "ts": "2026-08-28T18:05:47.990136+00:00",
+      "ts": "2026-08-28T18:28:37.966243+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -725,7 +725,7 @@
       "prompt_chars": 12680
     },
     {
-      "ts": "2026-08-28T18:05:47.990574+00:00",
+      "ts": "2026-08-28T18:28:37.966609+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -746,13 +746,13 @@
       "prompt_chars": 12684
     },
     {
-      "ts": "2026-08-28T18:05:47.990978+00:00",
+      "ts": "2026-08-28T18:28:37.966977+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 3170,
         "completion": 114,
@@ -767,13 +767,13 @@
       "prompt_chars": 12680
     },
     {
-      "ts": "2026-08-28T18:05:47.991422+00:00",
+      "ts": "2026-08-28T18:28:37.967344+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 3170,
         "completion": 113,
@@ -788,13 +788,13 @@
       "prompt_chars": 12682
     },
     {
-      "ts": "2026-08-28T18:05:47.991806+00:00",
+      "ts": "2026-08-28T18:28:37.967663+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 2845,
         "completion": 99,
@@ -809,7 +809,7 @@
       "prompt_chars": 11381
     },
     {
-      "ts": "2026-08-28T18:05:47.992393+00:00",
+      "ts": "2026-08-28T18:28:37.968123+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -830,7 +830,7 @@
       "prompt_chars": 16197
     },
     {
-      "ts": "2026-08-28T18:05:47.992724+00:00",
+      "ts": "2026-08-28T18:28:37.968412+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -851,7 +851,7 @@
       "prompt_chars": 9704
     },
     {
-      "ts": "2026-08-28T18:05:47.993198+00:00",
+      "ts": "2026-08-28T18:28:37.968788+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -872,7 +872,7 @@
       "prompt_chars": 13694
     },
     {
-      "ts": "2026-08-28T18:05:47.993719+00:00",
+      "ts": "2026-08-28T18:28:37.969293+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -893,13 +893,13 @@
       "prompt_chars": 16191
     },
     {
-      "ts": "2026-08-28T18:05:47.994183+00:00",
+      "ts": "2026-08-28T18:28:37.969670+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 3519,
         "completion": 110,
@@ -914,7 +914,7 @@
       "prompt_chars": 14078
     },
     {
-      "ts": "2026-08-28T18:05:47.994625+00:00",
+      "ts": "2026-08-28T18:28:37.970105+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -935,7 +935,7 @@
       "prompt_chars": 13688
     },
     {
-      "ts": "2026-08-28T18:05:47.994998+00:00",
+      "ts": "2026-08-28T18:28:37.970486+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -956,13 +956,13 @@
       "prompt_chars": 11485
     },
     {
-      "ts": "2026-08-28T18:05:47.995377+00:00",
+      "ts": "2026-08-28T18:28:37.971047+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.0,
+      "latency_ms": 0.1,
       "tokens": {
         "prompt": 2845,
         "completion": 99,
@@ -977,7 +977,7 @@
       "prompt_chars": 11383
     },
     {
-      "ts": "2026-08-28T18:05:47.995785+00:00",
+      "ts": "2026-08-28T18:28:37.971376+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -998,13 +998,13 @@
       "prompt_chars": 9665
     },
     {
-      "ts": "2026-08-28T18:05:47.996229+00:00",
+      "ts": "2026-08-28T18:28:37.971766+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 2846,
         "completion": 99,
@@ -1019,7 +1019,7 @@
       "prompt_chars": 11387
     },
     {
-      "ts": "2026-08-28T18:05:47.996672+00:00",
+      "ts": "2026-08-28T18:28:37.972264+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -1040,13 +1040,13 @@
       "prompt_chars": 14058
     },
     {
-      "ts": "2026-08-28T18:05:47.997138+00:00",
+      "ts": "2026-08-28T18:28:37.972663+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 3514,
         "completion": 114,
@@ -1061,13 +1061,13 @@
       "prompt_chars": 14056
     },
     {
-      "ts": "2026-08-28T18:05:47.997585+00:00",
+      "ts": "2026-08-28T18:28:37.973071+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
       "persona": "Category Manager",
       "mock": true,
-      "latency_ms": 0.1,
+      "latency_ms": 0.0,
       "tokens": {
         "prompt": 3515,
         "completion": 115,
@@ -1082,7 +1082,7 @@
       "prompt_chars": 14062
     },
     {
-      "ts": "2026-08-28T18:05:47.998036+00:00",
+      "ts": "2026-08-28T18:28:37.973479+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -1103,7 +1103,7 @@
       "prompt_chars": 14074
     },
     {
-      "ts": "2026-08-28T18:05:47.998496+00:00",
+      "ts": "2026-08-28T18:28:37.973869+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -1124,7 +1124,7 @@
       "prompt_chars": 14391
     },
     {
-      "ts": "2026-08-28T18:05:47.998637+00:00",
+      "ts": "2026-08-28T18:28:37.974005+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
@@ -1145,7 +1145,7 @@
       "prompt_chars": 4520
     },
     {
-      "ts": "2026-08-28T18:05:47.998774+00:00",
+      "ts": "2026-08-28T18:28:37.974126+00:00",
       "type": "llm",
       "provider": "mock",
       "model": "mock-llm",
